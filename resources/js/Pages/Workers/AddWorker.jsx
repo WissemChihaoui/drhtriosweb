@@ -73,7 +73,7 @@ const AddWorker = ({ auth, mustVerifyEmail, status, employees }) => {
         category: null,  // or a default value from categories
     
         // Company details
-        department: null, // or a default value from depatements
+        departement: null, // or a default value from depatements
         fonction: null,   // or a default value from fonctions
         contract: null,   // or a default value from contracts
         embauche: null,   // Assuming you're using a Date object
@@ -239,7 +239,7 @@ const AddWorker = ({ auth, mustVerifyEmail, status, employees }) => {
                                 </div>
                                 <div className="flex flex-column gap-2">
                                     <label htmlFor="departement">Départment</label>
-                                    <Dropdown id="department" value={data.department} options={depatements} optionLabel="name" placeholder="Choisir Département" onChange={(e) => handleDropdownChange('department', e.value)} className="w-full md:w-14rem" />
+                                    <Dropdown id="departement" value={data.departement} options={depatements} optionLabel="name" placeholder="Choisir Département" onChange={(e) => handleDropdownChange('departement', e.value)} className="w-full md:w-14rem" />
                                     <small className="text-red-500" id="username-help">
                                         Départment est requis
                                     </small>

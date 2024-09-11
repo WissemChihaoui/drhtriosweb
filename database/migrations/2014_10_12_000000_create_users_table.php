@@ -19,8 +19,9 @@ return new class extends Migration
             $table->unsignedBigInteger('id_societe')->default(1);
             $table->foreign('id_societe')->references('id')->on('societes')->onDelete('cascade');
             $table->string('phone');
-            $table->string('nomGerant');
+            $table->string('name');
             $table->string('adress');
+            $table->string('company');
            
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();

@@ -55,7 +55,7 @@ class WorkerController extends Controller
 
 public function addWorker(Request $request){
     
-    {
+    // dd($request->all());
         $validatedData = $request->validate([
             'name' => 'nullable|string|max:255',
             'birthdate' => 'nullable|date',
@@ -64,7 +64,7 @@ public function addWorker(Request $request){
             'address' => 'nullable|string',
             'email' => 'nullable|email|max:255',
             'category' => 'nullable',
-            'department' => 'nullable',
+            'departement' => 'nullable',
             'fonction' => 'nullable',
             'contract' => 'nullable',
             'embauche' => 'nullable|date',
@@ -73,9 +73,7 @@ public function addWorker(Request $request){
             'salary_type' => 'nullable',
             'salary' => 'nullable|numeric',
             'polyvalence' => 'array',
-            'resume' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
-            'document' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
-            'cin' => 'nullable|file|mimes:png,jpg,jpeg|max:2048',
+            
         ]);
 
         if ($request->hasFile('resume')) {
@@ -98,13 +96,13 @@ public function addWorker(Request $request){
         $employee->address = $validatedData['address'];
         $employee->email = $validatedData['email'];
         $employee->category = $validatedData['category']['code']; 
-        $employee->department = $validatedData['department']['code'];
-        $employee->fonction = $validatedData['fonction']['code'];
+        $employee->id_departement = $validatedData['department']['code'] ?? null;
+        $employee->id_fonction = 1 ?? null;
         $employee->contract = $validatedData['contract']['code'];
-        $employee->embauche = $validatedData['embauche'];
+        $employee->date_embauche = $validatedData['embauche'];
         $employee->start_date = $validatedData['start_date'];
         $employee->end_date = $validatedData['end_date'];
-        $employee->salary_type = $validatedData['salary_type']['code'];
+        $employee->contract = $validatedData['salary_type']['code'];
         $employee->salary = $validatedData['salary'];
 
         $employee->resume = $resumePath ?? null;
@@ -115,8 +113,8 @@ public function addWorker(Request $request){
 
         $employee->save();
 
-        return redirect()->route('workers')->with('success', 'Employee created successfully.');
-    }
+        return redirect()->back()->with('success', 'Employee created successfully.');
+    
 }
 
 }

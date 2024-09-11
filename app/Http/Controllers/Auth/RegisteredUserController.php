@@ -53,7 +53,7 @@ class RegisteredUserController extends Controller
 
         // Create the user with additional fields
         $user = User::create([
-            'nomGerant' => $request->name,
+            'name' => $request->name,
             'company' => $request->company,
             'phone' => $request->phone,
             'adress' => $request->adress,
