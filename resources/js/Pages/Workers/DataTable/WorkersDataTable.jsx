@@ -29,6 +29,8 @@ const {
 const {
     setData,post
 } = useForm({ids: []})
+console.log('employees',employees);
+
     const [products, setProducts] = useState(employees);
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
@@ -76,9 +78,12 @@ const {
                 preserveScroll: true,
                 onSuccess: () => {
                     setProducts(products.filter((productOld)=> productOld.id !== product.id))
-                    closeModal()
+                    closeModal();
+                    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Employeé Deleted', life: 3000 });
                 },  // Close modal if successful
-                onError: () => {},              // Handle errors (optional)
+                onError: () => {
+                    toast.current.show({ severity: 'error', summary: 'Error', detail: 'Failed to delete employees', life: 3000 });
+                },              
                 onFinish: () => reset(),        // Reset form state on finish
             });
         }
@@ -190,9 +195,9 @@ const {
                 >
                     <Column className='dark:bg-gray-800 dark:text-gray-200' selectionMode="multiple" exportable={false}></Column>
                     <Column className='dark:bg-gray-800 dark:text-gray-200' field="id" header="Id" sortable style={{ minWidth: '12rem' }}></Column>
-                    <Column className='dark:bg-gray-800 dark:text-gray-200' field="nom" header="Nom" sortable style={{ minWidth: '16rem' }}></Column>
+                    <Column className='dark:bg-gray-800 dark:text-gray-200' field="name" header="Nom" sortable style={{ minWidth: '16rem' }}></Column>
                     <Column className='dark:bg-gray-800 dark:text-gray-200' field="id_departement" header="Département" sortable style={{ minWidth: '8rem' }}></Column>
-                    <Column className='dark:bg-gray-800 dark:text-gray-200' field="categorie" header="Contrat" sortable style={{ minWidth: '8rem' }}></Column>
+                    <Column className='dark:bg-gray-800 dark:text-gray-200' field="contract" header="Contrat" sortable style={{ minWidth: '8rem' }}></Column>
                     <Column className='dark:bg-gray-800 dark:text-gray-200' field="statut" header="Statut" body={statusBodyTemplate} sortable style={{ minWidth: '8rem' }}></Column>
                     <Column className='dark:bg-gray-800 dark:text-gray-200' body={actionBodyTemplate} exportable={false} style={{ minWidth: '12rem' }}></Column>
                 </DataTable>

@@ -14,55 +14,17 @@ import { InputSwitch } from 'primereact/inputswitch';
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Toast } from 'primereact/toast';
 import { useForm } from "@inertiajs/react";
-const AddWorker = ({ auth, mustVerifyEmail, status, employees }) => {
+const AddWorker = ({ auth, mustVerifyEmail, status, employees, departements,contractsType, type_salairs, polyvalences, categories }) => {
+    
+    
     
     const stepperRef = useRef(null);
     const genderOptions = ['Homme', 'Femme'];
     
     const toast = useRef(null);
+  
     
-    const categories = [
-        { name: 'categorie 1', code: '1' },
-        { name: 'categorie 2', code: '2' },
-        { name: 'categorie 3', code: '3' },
-        { name: 'categorie 4', code: '4' },
-        { name: 'categorie 5', code: '5' }
-    ];
-    const depatements = [
-        { name: 'departement 1', code: '1' },
-        { name: 'departement 2', code: '2' },
-        { name: 'departement 3', code: '3' },
-        { name: 'departement 4', code: '4' },
-        { name: 'departement 5', code: '5' }
-    ];
-    const fonctions = [
-        { name: 'fonctions 1', code: '1' },
-        { name: 'fonctions 2', code: '2' },
-        { name: 'fonctions 3', code: '3' },
-        { name: 'fonctions 4', code: '4' },
-        { name: 'fonctions 5', code: '5' }
-    ];
-    const contracts = [
-        { name: 'contracts 1', code: '1' },
-        { name: 'contracts 2', code: '2' },
-        { name: 'contracts 3', code: '3' },
-        { name: 'contracts 4', code: '4' },
-        { name: 'contracts 5', code: '5' }
-    ];
-    const salaryTypes = [
-        { name: 'salaryTypes 1', code: '1' },
-        { name: 'salaryTypes 2', code: '2' },
-        { name: 'salaryTypes 3', code: '3' },
-        { name: 'salaryTypes 4', code: '4' },
-        { name: 'salaryTypes 5', code: '5' }
-    ];
-    const polyvalences =[
-        {label: 'surjet 1', id:'1'},
-        {label: 'surjet 2', id:'2'},
-        {label: 'surjet 3', id:'3'},
-        {label: 'surjet 4', id:'4'},
-    ]
-    const { post, setData, data } = useForm({
+    const { post, setData, data, errors } = useForm({
         // Personal details
         name: '',
         birthdate: null,  // Assuming you're using a Date object
@@ -88,11 +50,9 @@ const AddWorker = ({ auth, mustVerifyEmail, status, employees }) => {
         cin: null,        // Or handle it based on file input requirements
     
         // Polyvalences
-        polyvalence: polyvalences.reduce((acc, curr) => {
-            acc[curr.id] = false; // Initialize all polyvalence IDs with false
-            return acc;
-        }, {})
+        polyvalence: []
     });
+    console.log('data', data);
     const handleChange = (e) => {
         const { name, value } = e.target;
         setData((prevData) => ({
@@ -100,25 +60,49 @@ const AddWorker = ({ auth, mustVerifyEmail, status, employees }) => {
             [name]: value,
         }));
     };
-
+    const [filteredFonctions, setFilteredFonctions] = useState([]);
     // Handle special input (Calendar, Dropdown, etc.)
     const handleDropdownChange = (name, value) => {
+        console.log(value)
         setData((prevData) => ({
             ...prevData,
             [name]: value
         }));
+
+        if (name === 'departement') {
+            console.log('After Pick',departements);
+            
+            // Find the selected department and get its fonctions
+            const selectedDepartment = departements.find(dep => dep.id === value);
+            const fonctionsForDepartement = selectedDepartment ? selectedDepartment.fonctions : [];
+            setFilteredFonctions(fonctionsForDepartement);
+            setData((prevData) => ({
+                ...prevData,
+                fonction: null // Reset fonction when department changes
+            }));
+        }
     };
 
    
     const handlePolyvalenceChange = (id, checked) => {
-        setData((prevData) => ({
-            ...prevData,
-            polyvalence: {
-                ...prevData.polyvalence,
-                [id]: checked, // Update the state for specific polyvalence id
-            },
-        }));
+        setData((prevData) => {
+            let updatedPolyvalence;
+    
+            if (checked) {
+                // Add the ID if it's checked and not already in the array
+                updatedPolyvalence = [...prevData.polyvalence, id];
+            } else {
+                // Remove the ID if it's unchecked
+                updatedPolyvalence = prevData.polyvalence.filter(polyId => polyId !== id);
+            }
+    
+            return {
+                ...prevData,
+                polyvalence: updatedPolyvalence, // Update polyvalence with the array of selected IDs
+            };
+        });
     };
+    
     const handleFileSelect = (event) => {
         console.log(event.options.props.id);
         
@@ -131,12 +115,23 @@ const AddWorker = ({ auth, mustVerifyEmail, status, employees }) => {
     };
     
 
-    // Handle form submission
     const handleSubmit = () => {
-        console.log("Form Data Submitted:", data);
-        post(route('add.worker'))
+        post(route('add.worker'), {
+            onError: (error) => {
+                console.log(error);
+                
+            },
+            onSuccess: () => {
+                toast.current.show({
+                    severity: 'success',
+                    summary: 'Success',
+                    detail: 'Worker added successfully.',
+                    life: 3000
+                });
+            }
+        });
     };
-
+    
    
     return (
         <AuthenticatedLayout auth={auth} header={"Ajouter un employée"}>
@@ -202,7 +197,7 @@ const AddWorker = ({ auth, mustVerifyEmail, status, employees }) => {
                                 </div>
                                 <div className="flex flex-column gap-2 lg:col-span-2">
                                     <label htmlFor="mail">Catégorie</label>
-                                    <Dropdown value={data.category} options={categories} optionLabel="name" placeholder="Choisir Catégorie" onChange={(e) => handleDropdownChange('category', e.value)} className="w-full md:w-14rem" />
+                                    <Dropdown value={data.category} options={categories} optionLabel="name" optionValue="id" placeholder="Choisir Catégorie" onChange={(e) => handleDropdownChange('category', e.value)} className="w-full md:w-14rem" />
                                     
                                     <small className="text-red-500" id="username-help">
                                         Catégorie est requis
@@ -239,21 +234,21 @@ const AddWorker = ({ auth, mustVerifyEmail, status, employees }) => {
                                 </div>
                                 <div className="flex flex-column gap-2">
                                     <label htmlFor="departement">Départment</label>
-                                    <Dropdown id="departement" value={data.departement} options={depatements} optionLabel="name" placeholder="Choisir Département" onChange={(e) => handleDropdownChange('departement', e.value)} className="w-full md:w-14rem" />
+                                    <Dropdown id="departement" value={data.departement} options={departements} optionValue="id" optionLabel="nom_departement" placeholder="Choisir Département" onChange={(e) => handleDropdownChange('departement', e.value)} className="w-full md:w-14rem" />
                                     <small className="text-red-500" id="username-help">
                                         Départment est requis
                                     </small>
                                 </div>
                                 <div className="flex flex-column gap-2">
                                     <label htmlFor="fonction">Fonction</label>
-                                    <Dropdown id="fonction" value={data.fonction} options={fonctions} optionLabel="name" placeholder="Choisir Fonction" onChange={(e) => handleDropdownChange('fonction', e.value)} className="w-full md:w-14rem" />
+                                    <Dropdown id="fonction" value={data.fonction} options={filteredFonctions} optionValue="id" optionLabel="name" placeholder="Choisir Fonction" onChange={(e) => handleDropdownChange('fonction', e.value)} className="w-full md:w-14rem" />
                                     <small className="text-red-500" id="username-help">
                                         Fonction est requis
                                     </small>
                                 </div>
                                 <div className="flex flex-column gap-2">
                                     <label htmlFor="contract">Contrat</label>
-                                    <Dropdown id="contract" value={data.contract} options={contracts} optionLabel="name" placeholder="Choisir Contrat" onChange={(e) => handleDropdownChange('contract', e.value)} className="w-full md:w-14rem" />
+                                    <Dropdown id="contract" value={data.contract} options={contractsType} optionLabel="name" optionValue="id" placeholder="Choisir Contrat" onChange={(e) => handleDropdownChange('contract', e.value)} className="w-full md:w-14rem" />
                                     <small className="text-red-500" id="username-help">
                                         Contrat est requis
                                     </small>
@@ -285,7 +280,7 @@ const AddWorker = ({ auth, mustVerifyEmail, status, employees }) => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 p-4">
                                 <div className="flex flex-column gap-2">
                                     <label htmlFor="salary_type">Type de salaire</label>
-                                    <Dropdown id="salary_type" name="salary_type" onChange={(e) => handleDropdownChange('salary_type', e.value)} value={data.salary_type}  options={salaryTypes} optionLabel="name" placeholder="Choisir Contrat" className="w-full md:w-14rem" />
+                                    <Dropdown id="salary_type" name="salary_type" onChange={(e) => handleDropdownChange('salary_type', e.value)} value={data.salary_type}  options={type_salairs} optionLabel="type" optionValue="id" placeholder="Choisir Contrat" className="w-full md:w-14rem" />
                                     <small className="text-red-500" id="username-help">
                                     Type de salaire est requis
                                     </small>
@@ -373,16 +368,17 @@ const AddWorker = ({ auth, mustVerifyEmail, status, employees }) => {
                     <StepperPanel header="Polyvalence">
                     <div className="flex flex-column">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-2 p-4">
-                                {polyvalences.map((polyvalence)=> (
-                                    <div className="flex flex-column gap-2" key={polyvalence.id}>
-                                     <label htmlFor={`polyvalence-${polyvalence.id}`}>{polyvalence.label}</label>
+                            {polyvalences.map((polyvalence) => (
+                                <div className="flex flex-column gap-2" key={polyvalence.id}>
+                                    <label htmlFor={`polyvalence-${polyvalence.id}`}>{polyvalence.name}</label>
                                     <InputSwitch
-                                        id={`polyvalence-${polyvalence.id}`}
-                                        checked={data.polyvalence[polyvalence.id] || false}
+                                        id={polyvalence.id}
+                                        checked={data.polyvalence.includes(polyvalence.id)} // Check if the ID is in the array
                                         onChange={(e) => handlePolyvalenceChange(polyvalence.id, e.value)}
                                     />
                                 </div>
-                                ))}
+                            ))}
+
                             </div>
                         </div>
                         <div className="flex py-4 gap-2">

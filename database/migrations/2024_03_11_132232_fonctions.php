@@ -14,12 +14,13 @@ return new class extends Migration
     public function up()
     {
         Schema::disableForeignKeyConstraints();
-        Schema::create('fanctions', function (Blueprint $table) {
+        Schema::create('fonctions', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_societe');
             $table->foreign('id_societe')->references('id')->on('societes')->onDelete('cascade');
             $table->unsignedBigInteger('id_departement');
             $table->foreign('id_departement')->references('id')->on('departements')->onDelete('cascade');
+            $table->string('name');
             $table->timestamps();
         });
         Schema::enableForeignKeyConstraints();
@@ -32,7 +33,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('fanctions');
+        Schema::dropIfExists('fonctions');
 
     }
 };

@@ -14,23 +14,22 @@ return new class extends Migration
     public function up()
     {
         Schema::disableForeignKeyConstraints();
-        Schema::create('emp_conts', function (Blueprint $table) {
+        Schema::create('employee_contracts', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->unsignedBigInteger('id_emp');
-            $table->foreign('id_emp')->references('id')->on('employees')->onDelete('cascade');
-            $table->unsignedBigInteger('id_contrat');
-            $table->foreign('id_contrat')->references('id')->on('contarts')->onDelete('cascade');
-            $table->unsignedBigInteger('id_type_salair');
-            $table->foreign('id_type_salair')->references('id')->on('type_salairs')->onDelete('cascade');
-            $table->date('date_embauche');
-            $table->date('date_debut_contrat');
-            $table->date('date_fin_contrat');
-            $table->decimal('montant',8,3);
+            $table->unsignedBigInteger('employee_id');
+            $table->foreign('employee_id')->references('id')->on('emplyoees')->onDelete('cascade');
+            $table->unsignedBigInteger('contract_id');
+            $table->foreign('contract_id')->references('id')->on('contarts')->onDelete('cascade');
+            $table->unsignedBigInteger('salary_type_id');
+            $table->foreign('salary_type_id')->references('id')->on('type_salairs')->onDelete('cascade');
+            $table->date('hire_date');
+            $table->date('contract_start_date');
+            $table->date('contract_end_date');
+            $table->decimal('amount', 10, 2); // Adjusted precision
             $table->timestamps();
         });
         Schema::enableForeignKeyConstraints();
-
     }
 
     /**
@@ -40,7 +39,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('emp_conts');
-
+        Schema::dropIfExists('employee_contracts');
     }
 };
