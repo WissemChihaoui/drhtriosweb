@@ -44,7 +44,7 @@ export const Menu = [
     },
     {
         label: "Département",
-        link:"dashboard",
+        link:"departements",
         children:null,
         icon:"building"
     },

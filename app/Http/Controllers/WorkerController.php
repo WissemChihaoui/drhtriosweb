@@ -20,8 +20,14 @@ class WorkerController extends Controller
     public function index()
     {
         $employees = Employee::all();
+        $departements = Departement::with('fonctions')->get();
+        $employee_contracts = Employee_contracts::all();
+        $contracts = Contarts::all();
         return Inertia::render('Workers/Workers', [
             'employees' => $employees,
+            'departements' => $departements,
+            'employee_contracts' => $employee_contracts,
+            'contractsType' => $contracts,
         ]);
     }
     public function add(){
@@ -126,7 +132,6 @@ class WorkerController extends Controller
             $employeeContract = new Employee_contracts();
             $employeeContract->employee_id = $employee->id; // Set the employee ID
             $employeeContract->contract_id = $validatedData['contract'] ?? null;
-            $employeeContract->name =$validatedData['contract'] ;
             $employeeContract->hire_date = $validatedData['embauche'] ?? date('d-m-Y');
             $employeeContract->contract_start_date = $validatedData['start_date'] ?? date('d-m-Y');
             $employeeContract->contract_end_date = $validatedData['end_date'] ?? date('d-m-Y');

@@ -9,7 +9,7 @@ import { InputText } from 'primereact/inputtext';
 import { Tag } from 'primereact/tag';
 import { Link, useForm } from '@inertiajs/react';
 
-export default function WorkersDataTable({employees}) {
+export default function WorkersDataTable({employees , departements, contractsType, employee_contracts}) {
     let emptyProduct = {
         id: null,
         name: '',
@@ -29,7 +29,6 @@ const {
 const {
     setData,post
 } = useForm({ids: []})
-console.log('employees',employees);
 
     const [products, setProducts] = useState(employees);
     const [productDialog, setProductDialog] = useState(false);
@@ -45,7 +44,6 @@ console.log('employees',employees);
    useEffect(() => {
        if(selectedProducts){
         const idsToDelete = selectedProducts.map((product) => product.id);
-        console.log('ids to delete:',idsToDelete);
         setData({ids : idsToDelete})
        }
    }, [selectedProducts])
@@ -58,6 +56,37 @@ console.log('employees',employees);
     const hideDeleteProductsDialog = () => {
         setDeleteProductsDialog(false);
     };
+
+      // Function to get department name from department id
+      const getDepartmentName = (id) => {
+        const dept = departements.find(dep => dep.id === id);
+        return dept ? dept.nom_departement : 'Unknown';
+    };
+
+    // Function to get contract name from contract id
+    const getContractName = (employeeId) => {
+        
+        const employeeContract = employee_contracts.find(contract => {
+            return contract.employee_id === employeeId;
+            
+        });
+        
+        if (employeeContract) {
+            const contractType = contractsType.find(type => type.id === employeeContract.contract_id);
+            return contractType ? contractType.name : 'Unknown';
+        }
+        return 'Unknown';
+    };
+
+ // Department Template
+ const departmentBodyTemplate = (rowData) => {
+    return getDepartmentName(rowData.id_departement);
+};
+
+// Contract Template
+const contractBodyTemplate = (rowData) => {
+    return getContractName(rowData.id); // Get contract name based on employee id
+};
 
     const editProduct = (product) => {
         setProduct({ ...product });
@@ -196,8 +225,8 @@ console.log('employees',employees);
                     <Column className='dark:bg-gray-800 dark:text-gray-200' selectionMode="multiple" exportable={false}></Column>
                     <Column className='dark:bg-gray-800 dark:text-gray-200' field="id" header="Id" sortable style={{ minWidth: '12rem' }}></Column>
                     <Column className='dark:bg-gray-800 dark:text-gray-200' field="name" header="Nom" sortable style={{ minWidth: '16rem' }}></Column>
-                    <Column className='dark:bg-gray-800 dark:text-gray-200' field="id_departement" header="Département" sortable style={{ minWidth: '8rem' }}></Column>
-                    <Column className='dark:bg-gray-800 dark:text-gray-200' field="contract" header="Contrat" sortable style={{ minWidth: '8rem' }}></Column>
+                    <Column className='dark:bg-gray-800 dark:text-gray-200' body={departmentBodyTemplate} header="Département" sortable style={{ minWidth: '8rem' }}></Column>
+                    <Column className='dark:bg-gray-800 dark:text-gray-200' body={contractBodyTemplate} header="Contrat" sortable style={{ minWidth: '8rem' }}></Column>
                     <Column className='dark:bg-gray-800 dark:text-gray-200' field="statut" header="Statut" body={statusBodyTemplate} sortable style={{ minWidth: '8rem' }}></Column>
                     <Column className='dark:bg-gray-800 dark:text-gray-200' body={actionBodyTemplate} exportable={false} style={{ minWidth: '12rem' }}></Column>
                 </DataTable>

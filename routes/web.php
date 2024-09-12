@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 use App\Http\Controllers\WorkerController;
+use App\Http\Controllers\DepartementController;
 use App\Http\Controllers\FileUploadController;
 
 /*
@@ -47,6 +48,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::post('/upload-file', [FileUploadController::class, 'upload'])->name('file.upload');
+
+Route::middleware(['auth','verified'])->group(function () {
+    Route::get('/departements', [DepartementController::class, 'index'])->name('departements');
+});
 
 
 require __DIR__.'/auth.php';
