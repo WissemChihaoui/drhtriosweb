@@ -14,11 +14,18 @@ class FonctionsTableSeeder extends Seeder
      */
     public function run()
     {
+        DB::table('fonctions')->insert([
+            'id_societe' => 1,
+            'id_departement' => 1, // Assign to the "undefined" department
+            'name' => '-',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
         // Assuming department IDs are known and already present
         $departementIds = [
-            'Informatique' => 1, // Example IDs, adjust according to your actual IDs
-            'Mécanique' => 2,
-            'RH' => 3,
+            'Informatique' => 2, // Example IDs, adjust according to your actual IDs
+            'Mécanique' => 3,
+            'RH' => 4,
         ];
 
         // Example data for each department

@@ -65,7 +65,7 @@ export const Menu = [
     },
     {
         label: "Polyvalence",
-        link:"dashboard",
+        link:"polyvalence",
         children:null,
         icon:"user-star"
     },

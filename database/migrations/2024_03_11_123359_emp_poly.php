@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -16,7 +15,6 @@ return new class extends Migration
         Schema::disableForeignKeyConstraints();
         Schema::create('emp_polys', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
             $table->unsignedBigInteger('id_emp');
             $table->foreign('id_emp')->references('id')->on('employees')->onDelete('cascade');
             $table->unsignedBigInteger('id_polyvalence');
@@ -34,6 +32,5 @@ return new class extends Migration
     public function down()
     {
         Schema::dropIfExists('emp_polys');
-
     }
 };

@@ -8,6 +8,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\WorkerController;
 use App\Http\Controllers\DepartementController;
 use App\Http\Controllers\FileUploadController;
+use App\Http\Controllers\PolyvalencesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,7 +52,14 @@ Route::post('/upload-file', [FileUploadController::class, 'upload'])->name('file
 
 Route::middleware(['auth','verified'])->group(function () {
     Route::get('/departements', [DepartementController::class, 'index'])->name('departements');
+    Route::delete('/departements/{id}', [DepartementController::class, 'destroy'])->name('departements.destroy');
+    Route::post('/departements', [DepartementController::class, 'deleteMultiple'])->name('departements.deleteMultiple');
+    Route::post('add/departements', [DepartementController::class, 'saveDepartement'])->name('add.departement');
 });
 
+
+Route::middleware(['auth','verified'])->group(function () {
+    Route::get('/polyvalence', [PolyvalencesController::class, 'index'])->name('polyvalence');
+});
 
 require __DIR__.'/auth.php';

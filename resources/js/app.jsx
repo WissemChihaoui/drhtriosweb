@@ -1,4 +1,4 @@
-import "./bootstrap";
+
 import "../css/app.css";
 import "../css/tabler-icons.css";
 import "../css/additional-styles/flatpickr.css";
@@ -8,8 +8,7 @@ import { createInertiaApp } from "@inertiajs/react";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { PrimeReactProvider } from "primereact/api";
 import { BrowserRouter as Router } from "react-router-dom";
-import 'primereact/resources/primereact.css';
-import 'primereact/resources/themes/lara-light-indigo/theme.css';
+
 import ThemeProvider from "./utils/ThemeContext";
 
 const appName =

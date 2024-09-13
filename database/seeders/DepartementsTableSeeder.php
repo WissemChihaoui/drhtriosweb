@@ -19,6 +19,12 @@ class DepartementsTableSeeder extends Seeder
 
         DB::table('departements')->insert([
             [
+                'id_societe' => 1, // Adjust based on your structure
+                'nom_departement' => '-',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
                 'id_societe' => $societeId,
                 'nom_departement' => 'Informatique',
                 'created_at' => now(),

@@ -197,7 +197,7 @@ const AddWorker = ({ auth, mustVerifyEmail, status, employees, departements,cont
                                 </div>
                                 <div className="flex flex-column gap-2 lg:col-span-2">
                                     <label htmlFor="mail">Catégorie</label>
-                                    <Dropdown value={data.category} options={categories} optionLabel="name" optionValue="id" placeholder="Choisir Catégorie" onChange={(e) => handleDropdownChange('category', e.value)} className="w-full md:w-14rem" />
+                                    <Dropdown value={data.category} options={categories} optionLabel="name" optionValue="id" placeholder="Choisir Catégorie" onChange={(e) => handleDropdownChange('category', e.value)}  />
                                     
                                     <small className="text-red-500" id="username-help">
                                         Catégorie est requis
@@ -209,7 +209,6 @@ const AddWorker = ({ auth, mustVerifyEmail, status, employees, departements,cont
                             <Button
                                 label="Suivant"
                                 icon="ti ti-arrow-down"
-                                className="btn bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white"
                                 iconPos="right"
                                 onClick={() =>
                                     stepperRef.current.nextCallback()
@@ -234,21 +233,21 @@ const AddWorker = ({ auth, mustVerifyEmail, status, employees, departements,cont
                                 </div>
                                 <div className="flex flex-column gap-2">
                                     <label htmlFor="departement">Départment</label>
-                                    <Dropdown id="departement" value={data.departement} options={departements} optionValue="id" optionLabel="nom_departement" placeholder="Choisir Département" onChange={(e) => handleDropdownChange('departement', e.value)} className="w-full md:w-14rem" />
+                                    <Dropdown id="departement" value={data.departement} options={departements} optionValue="id" optionLabel="nom_departement" placeholder="Choisir Département" onChange={(e) => handleDropdownChange('departement', e.value)}  />
                                     <small className="text-red-500" id="username-help">
                                         Départment est requis
                                     </small>
                                 </div>
                                 <div className="flex flex-column gap-2">
                                     <label htmlFor="fonction">Fonction</label>
-                                    <Dropdown id="fonction" value={data.fonction} options={filteredFonctions} optionValue="id" optionLabel="name" placeholder="Choisir Fonction" onChange={(e) => handleDropdownChange('fonction', e.value)} className="w-full md:w-14rem" />
+                                    <Dropdown id="fonction" value={data.fonction} options={filteredFonctions} optionValue="id" optionLabel="name" placeholder="Choisir Fonction" onChange={(e) => handleDropdownChange('fonction', e.value)}  />
                                     <small className="text-red-500" id="username-help">
                                         Fonction est requis
                                     </small>
                                 </div>
                                 <div className="flex flex-column gap-2">
                                     <label htmlFor="contract">Contrat</label>
-                                    <Dropdown id="contract" value={data.contract} options={contractsType} optionLabel="name" optionValue="id" placeholder="Choisir Contrat" onChange={(e) => handleDropdownChange('contract', e.value)} className="w-full md:w-14rem" />
+                                    <Dropdown id="contract" value={data.contract} options={contractsType} optionLabel="name" optionValue="id" placeholder="Choisir Contrat" onChange={(e) => handleDropdownChange('contract', e.value)}  />
                                     <small className="text-red-500" id="username-help">
                                         Contrat est requis
                                     </small>
@@ -309,7 +308,6 @@ const AddWorker = ({ auth, mustVerifyEmail, status, employees, departements,cont
                             <Button
                                 label="Suivant"
                                 icon="ti ti-arrow-down"
-                                className="btn bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white"
                                 onClick={() =>
                                     stepperRef.current.nextCallback()
                                 }
@@ -358,7 +356,6 @@ const AddWorker = ({ auth, mustVerifyEmail, status, employees, departements,cont
                             <Button
                                 label="Suivant"
                                 icon="ti ti-arrow-down"
-                                className="btn bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white"
                                 onClick={() =>
                                     stepperRef.current.nextCallback()
                                 }
@@ -394,7 +391,6 @@ const AddWorker = ({ auth, mustVerifyEmail, status, employees, departements,cont
                                 onClick={handleSubmit}
                                 label="Ajouter"
                                 icon="ti ti-check"
-                                className="btn bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white"
                             />
                         </div>
                     </StepperPanel>

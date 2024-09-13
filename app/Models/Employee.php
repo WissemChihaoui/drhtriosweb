@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -31,11 +30,17 @@ class Employee extends Model
         'cin'
     ];
 
-    // The attributes that should be cast to native types.
     protected $casts = [
         'birthdate' => 'date',
         'date_embauche' => 'date',
         'start_date' => 'date',
         'end_date' => 'date'
     ];
+
+    public function polyvalences()
+    {
+        return $this->belongsToMany(Polyvalences::class, 'emp_polys', 'id_emp', 'id_polyvalence')
+                    ->withTimestamps(); // Include timestamps if you need them
+    }
 }
+
