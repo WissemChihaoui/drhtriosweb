@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::disableForeignKeyConstraints();
         Schema::create('polyvalences', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_societe');
+            $table->unsignedBigInteger('id_societe')->default(1);
             $table->foreign('id_societe')->references('id')->on('societes')->onDelete('cascade');
             $table->string('name');
             $table->timestamps();

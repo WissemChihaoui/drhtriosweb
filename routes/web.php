@@ -9,6 +9,7 @@ use App\Http\Controllers\WorkerController;
 use App\Http\Controllers\DepartementController;
 use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\PolyvalencesController;
+use App\Http\Controllers\SanctionsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -60,6 +61,14 @@ Route::middleware(['auth','verified'])->group(function () {
 
 Route::middleware(['auth','verified'])->group(function () {
     Route::get('/polyvalence', [PolyvalencesController::class, 'index'])->name('polyvalence');
+    Route::get('/machines', [PolyvalencesController::class, 'machines'])->name('machines');
+    Route::delete('/machines/{id}', [PolyvalencesController::class, 'deleteMachine'])->name('machines.destroy');
+    Route::post('/machines', [PolyvalencesController::class, 'deleteMachines'])->name('machines.destroyMultiple');
+    Route::post('add/machines', [PolyvalencesController::class, 'storeOrUpdate'])->name('machines.store');
+});
+
+Route::middleware(['auth','verified'])->group(function () {
+    Route::get('/sanctions', [SanctionsController::class, 'index'])->name('sanctions');
 });
 
 require __DIR__.'/auth.php';

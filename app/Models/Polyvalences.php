@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Polyvalences extends Model
 {
     use HasFactory;
-
+    protected $fillable = ['id', 'name'];
     // Define the many-to-many relationship with Employee
     public function employees()
     {

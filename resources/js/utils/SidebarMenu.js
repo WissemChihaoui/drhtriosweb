@@ -58,7 +58,7 @@ export const Menu = [
             },
             {
                 label: "Liste des sanctions",
-                link:"dashboard"
+                link:"sanctions"
             },
         ],
         icon:"zoom-question"
@@ -71,7 +71,7 @@ export const Menu = [
     },
     {
         label: "Liste des machines",
-        link:"dashboard",
+        link:"machines",
         children:null,
         icon:"building-warehouse"
     },

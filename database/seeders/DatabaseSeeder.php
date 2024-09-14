@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             TypeSalairsTableSeeder::class,
             UsersTableSeeder::class,
             CategoriesTableSeeder::class,
+            SanctionsTableSeeder::class,
             // Add other seeders here if you have any
         ]);
     }

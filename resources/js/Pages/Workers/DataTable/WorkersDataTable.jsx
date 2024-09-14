@@ -159,9 +159,11 @@ const contractBodyTemplate = (rowData) => {
     const leftToolbarTemplate = () => {
         return (
             <div className="flex flex-wrap gap-2">
-                <Button>
-                    <Link href={route('worker.add.page')} >Ajouter employée</Link>
-                </Button>
+                <Link href={route('worker.add.page')} >
+                    <Button>
+                        Ajouter employée
+                    </Button>
+                </Link>
                 <Button label="Supprimer" icon="ti ti-trash" severity="danger" onClick={confirmDeleteSelected} disabled={!selectedProducts || !selectedProducts.length} />
             </div>
         );

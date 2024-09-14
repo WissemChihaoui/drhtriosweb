@@ -7,6 +7,8 @@ import { Toolbar } from 'primereact/toolbar';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { Tag } from 'primereact/tag';
+import { Chip } from 'primereact/chip';
+        
 import { Link, useForm } from '@inertiajs/react';
 const PolyvalenceDataTable = ({employees}) => {
   
@@ -40,6 +42,10 @@ const {
     const [globalFilter, setGlobalFilter] = useState(null);
     const toast = useRef(null);
     const dt = useRef(null);
+
+    useEffect(()=>{
+        setProducts(employees)
+    }, [employees])
 
    useEffect(() => {
        if(selectedProducts){
@@ -153,16 +159,15 @@ const contractBodyTemplate = (rowData) => {
             onFinish: () => reset(),
         });
     };
-    
 
-    
     const leftToolbarTemplate = () => {
         return (
             <div className="flex flex-wrap gap-2">
-                <Button>
-                    <Link href={route('worker.add.page')} >Ajouter employée</Link>
-                </Button>
-                <Button label="Supprimer" icon="ti ti-trash" severity="danger" onClick={confirmDeleteSelected} disabled={!selectedProducts || !selectedProducts.length} />
+                 <Link href={route('worker.add.page')} >
+                    <Button>
+                        Ajouter employée
+                    </Button>
+                </Link>
             </div>
         );
     };
@@ -171,15 +176,12 @@ const contractBodyTemplate = (rowData) => {
         return <div className="flex flex-wrap gap-2 align-items-center justify-content-between "><Button size='small' label="Exporter" icon="ti ti-upload" onClick={exportCSV} className="p-button-help"/>{header}</div>;
     };
 
-    const statusBodyTemplate = (rowData) => {
-        return  rowData.statut === "1" ? <Tag value="active" severity='success'></Tag> : <Tag value="inactive" severity='danger'></Tag> ;
-    };
+   
 
     const actionBodyTemplate = (rowData) => {
         return (
             <React.Fragment>
                 <Button icon="ti ti-pencil" className="mr-2" rounded outlined  onClick={() => editProduct(rowData)} />
-                <Button icon="ti ti-trash" rounded outlined severity="danger" onClick={() => confirmDeleteProduct(rowData)} />
             </React.Fragment>
         );
     };
@@ -203,6 +205,20 @@ const contractBodyTemplate = (rowData) => {
         </React.Fragment>
     );
 
+    const polyvalencesTemplate = (rowData) => {
+        return (
+            <ul className='flex flex-wrap'>
+            { rowData.polyvalences.map((polyvalence, index)=> (
+                <li className='mx-1'  key={index}>
+                    <Link>
+                        <Chip label={polyvalence.name} />
+                    </Link>
+                </li>
+            ))}
+            </ul>
+        )
+    }
+
    
 
     return (
@@ -225,13 +241,10 @@ const contractBodyTemplate = (rowData) => {
                     emptyMessage='Pas de données'
                     globalFilter={globalFilter}
                 >
-                    <Column className='dark:bg-gray-800 dark:text-gray-200' selectionMode="multiple" exportable={false}></Column>
-                    <Column className='dark:bg-gray-800 dark:text-gray-200' field="id" header="Id" sortable style={{ minWidth: '12rem' }}></Column>
-                    <Column className='dark:bg-gray-800 dark:text-gray-200' field="name" header="Nom" sortable style={{ minWidth: '16rem' }}></Column>
-                    <Column className='dark:bg-gray-800 dark:text-gray-200' body={departmentBodyTemplate} header="Polyvalence" sortable style={{ minWidth: '8rem' }}></Column>
-                    <Column className='dark:bg-gray-800 dark:text-gray-200' body={contractBodyTemplate} header="Contrat" sortable style={{ minWidth: '8rem' }}></Column>
-                    <Column className='dark:bg-gray-800 dark:text-gray-200' field="statut" header="Statut" body={statusBodyTemplate} sortable style={{ minWidth: '8rem' }}></Column>
-                    <Column className='dark:bg-gray-800 dark:text-gray-200' body={actionBodyTemplate} exportable={false} style={{ minWidth: '12rem' }}></Column>
+                    <Column className='dark:bg-gray-800 dark:text-gray-200' field="id" header="Id" sortable style={{ minWidth: '8rem' }}></Column>
+                    <Column className='dark:bg-gray-800 dark:text-gray-200' field="name" header="Nom" sortable style={{ minWidth: '14rem' }}></Column>
+                    <Column className='dark:bg-gray-800 dark:text-gray-200' header="Machine" body={polyvalencesTemplate} sortable style={{ minWidth: '18rem' }}></Column>
+                    <Column className='dark:bg-gray-800 dark:text-gray-200' body={actionBodyTemplate} exportable={false} style={{ minWidth: '4rem' }}></Column>
                 </DataTable>
             </div>
 
