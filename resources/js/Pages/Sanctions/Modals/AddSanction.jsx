@@ -5,9 +5,8 @@ import { InputText } from 'primereact/inputtext';
 import { classNames } from 'primereact/utils';
 import { useForm } from "@inertiajs/react";
 
-
-const AddMachine = ({productDialog, hideDialog, toast,submitted,setSubmitted, product}) => {
-    
+const AddSanction = ({productDialog, hideDialog, toast,submitted,setSubmitted, product}) => {
+   
     const { post, setData, data, errors } = useForm(product);
     
     
@@ -15,9 +14,9 @@ const AddMachine = ({productDialog, hideDialog, toast,submitted,setSubmitted, pr
         setSubmitted(true);
         console.log('Submitted Data', data);
         
-        if (data.name.trim()) {
+        if (data.type_sanction.trim()) {
             console.log('Submited data:',data);
-           post(route('machines.store'),{
+           post(route('sanctions.store'),{
                 onError: (error) => {
                     console.log('ERREUR',error);
                     toast.current.show({
@@ -54,17 +53,17 @@ const AddMachine = ({productDialog, hideDialog, toast,submitted,setSubmitted, pr
   return (
   <div>
       
-        <Dialog visible={productDialog} style={{ width: '32rem' }} breakpoints={{ '960px': '75vw', '641px': '90vw' }} header="Ajouter Département" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
+        <Dialog visible={productDialog} style={{ width: '32rem' }} breakpoints={{ '960px': '75vw', '641px': '90vw' }} header="Ajouter Sanction" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
             <div className="field mb-4">
                 <label htmlFor="name" className="font-bold mb-2">
                     Nom
                 </label>
-                <InputText id="name" value={data.name} onChange={(e) => onInputChange(e, 'name')} required autoFocus className={classNames({ 'p-invalid': submitted && !data.name })} />
-                {submitted && !data.name && <small className="p-error">Nom est requis.</small>}
+                <InputText id="type_sanction" value={data.type_sanction} onChange={(e) => onInputChange(e, 'type_sanction')} required autoFocus className={classNames({ 'p-invalid': submitted && !data.type_sanction })} />
+                {submitted && !data.type_sanction && <small className="p-error">Nom est requis.</small>}
             </div>
         </Dialog>
   </div>
   )
 }
 
-export default AddMachine
+export default AddSanction

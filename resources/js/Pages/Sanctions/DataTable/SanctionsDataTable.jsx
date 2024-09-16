@@ -8,10 +8,8 @@ import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { Link, useForm } from "@inertiajs/react";
 
-export default function DepartementDataTable({ products, setProducts, productDialog, setProductDialog, product, setProduct }) {
-    
-    
-    
+const SanctionsDataTable = ({ products, setProducts, productDialog, setProductDialog, product, setProduct }) => {
+  
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
     const [deleteProductsDialog, setDeleteProductsDialog] = useState(false);
     const [selectedProducts, setSelectedProducts] = useState(null);
@@ -24,7 +22,6 @@ export default function DepartementDataTable({ products, setProducts, productDia
     useEffect(() => {
         if (selectedProducts) {
             const idsToDelete = selectedProducts
-                .filter((product) => product.id !== 1) // Filter products
                 .map((product) => product.id);
             setData({ ids: idsToDelete });
             console.log("Products to delete:", idsToDelete);
@@ -42,18 +39,11 @@ export default function DepartementDataTable({ products, setProducts, productDia
     };
 
     const editProduct = (product) => {
-        if (product.id !== 1) {
+       
             setProduct({ ...product });
             setProductDialog(true);
             console.log(product);
-        }else{
-            toast.current.show({
-                severity: "error",
-                summary: "Erreur",
-                detail: "Interdit de modifier cet enregistrement",
-                life: 3000,
-            });
-        }
+       
     };
 
     const closeModal = () => {
@@ -71,8 +61,7 @@ export default function DepartementDataTable({ products, setProducts, productDia
 
         // Use the `product.id` (which is set when you confirm delete)
         if (product && product.id) {
-            if (product.id !== 1) {
-                destroy(route("departements.destroy", product.id), {
+                destroy(route("sanctions.destroy", product.id), {
                     preserveScroll: true,
                     onSuccess: () => {
                         setProducts(
@@ -98,15 +87,6 @@ export default function DepartementDataTable({ products, setProducts, productDia
                     },
                     onFinish: () => reset(), // Reset form state on finish
                 });
-            } else {
-                toast.current.show({
-                    severity: "error",
-                    summary: "Erreur",
-                    detail: "Interdit de supprimer cet enregistrement",
-                    life: 3000,
-                });
-                closeModal();
-            }
         }
     };
 
@@ -119,12 +99,10 @@ export default function DepartementDataTable({ products, setProducts, productDia
     };
 
     const deleteSelectedProducts = () => {
-        const idsToDelete = selectedProducts
-            .filter((product) => product.id !== 1) // Filter products
-            .map((product) => product.id);
+        const idsToDelete = selectedProducts.map((product) => product.id);
         console.log("IDS", idsToDelete);
 
-        post(route("departements.deleteMultiple"), {
+        post(route("sanctions.destroyMultiple"), {
             method: "post", // Ensure the method is specified as POST
             onSuccess: () => {
                 setDeleteProductsDialog(false);
@@ -159,7 +137,7 @@ export default function DepartementDataTable({ products, setProducts, productDia
                 <Button
                     onClick={()=>setProductDialog(true)}
                 >
-                    Ajouter département
+                    Ajouter sanction
                 </Button>
                 <Button
                     label="Supprimer"
@@ -254,15 +232,16 @@ export default function DepartementDataTable({ products, setProducts, productDia
         </React.Fragment>
     );
 
-    const fonctionsTemplate = (rowData) => {
+    const createdDateTemplate = (rowData) => {
+        const formattedDate = new Date(rowData.created_at).toLocaleString('fr-FR', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+        }).replace(',', '');
         return (
-            <ul>
-                {rowData.fonctions.map((fonction) => (
-                    <li className="text-xs list-item" key={fonction.id}>
-                        {fonction.name}
-                    </li>
-                ))}
-            </ul>
+           <span>{formattedDate}</span>
         );
     };
 
@@ -301,15 +280,15 @@ export default function DepartementDataTable({ products, setProducts, productDia
                         style={{ minWidth: "12rem" }}
                     ></Column>
                     <Column
-                        field="nom_departement"
-                        header="Département"
+                        field="type_sanction"
+                        header="Nom"
                         sortable
                         style={{ minWidth: "16rem" }}
                     ></Column>
                     <Column
-                        body={fonctionsTemplate}
-                        header="Fonctions"
+                        header="Date de création"
                         style={{ minWidth: "16rem" }}
+                        body={createdDateTemplate}
                     ></Column>
                     <Column
                         body={actionBodyTemplate}
@@ -358,7 +337,7 @@ export default function DepartementDataTable({ products, setProducts, productDia
                     />
                     {product && (
                         <span>
-                            Êtes-vous sûr de vouloir supprimer les départements
+                            Êtes-vous sûr de vouloir supprimer les sanctions
                             sélectionnés ?
                         </span>
                     )}
@@ -369,3 +348,5 @@ export default function DepartementDataTable({ products, setProducts, productDia
         </div>
     );
 }
+
+export default SanctionsDataTable

@@ -10,8 +10,6 @@ import { Link, useForm } from "@inertiajs/react";
 
 export default function DepartementDataTable({ products, setProducts, productDialog, setProductDialog, product, setProduct }) {
     
-    
-    
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
     const [deleteProductsDialog, setDeleteProductsDialog] = useState(false);
     const [selectedProducts, setSelectedProducts] = useState(null);
@@ -338,7 +336,7 @@ export default function DepartementDataTable({ products, setProducts, productDia
                     />
                     {product && (
                         <span>
-                            Êtes-vous sûr de vouloir supprimer les produits
+                            Êtes-vous sûr de vouloir supprimer les sanctions
                             sélectionnés ?
                         </span>
                     )}

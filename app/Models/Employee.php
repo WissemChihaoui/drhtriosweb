@@ -42,5 +42,9 @@ class Employee extends Model
         return $this->belongsToMany(Polyvalences::class, 'emp_polys', 'id_emp', 'id_polyvalence')
                     ->withTimestamps(); // Include timestamps if you need them
     }
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id');
+    }
 }
 

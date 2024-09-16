@@ -174,13 +174,13 @@ const contractBodyTemplate = (rowData) => {
     };
 
     const statusBodyTemplate = (rowData) => {
-        return  rowData.statut === "1" ? <Tag value="active" severity='success'></Tag> : <Tag value="inactive" severity='danger'></Tag> ;
+        return  rowData.status === "active" ? <Tag value="active" severity='success'></Tag> : <Tag value="inactive" severity='danger'></Tag> ;
     };
 
     const actionBodyTemplate = (rowData) => {
         return (
             <React.Fragment>
-                <Button icon="ti ti-pencil" className="mr-2" rounded outlined  onClick={() => editProduct(rowData)} />
+                <Link href={route('edit.worker.page', { id: rowData.id })}><Button icon="ti ti-pencil" className="mr-2" rounded outlined/></Link>
                 <Button icon="ti ti-trash" rounded outlined severity="danger" onClick={() => confirmDeleteProduct(rowData)} />
             </React.Fragment>
         );
@@ -232,7 +232,7 @@ const contractBodyTemplate = (rowData) => {
                     <Column className='dark:bg-gray-800 dark:text-gray-200' field="name" header="Nom" sortable style={{ minWidth: '16rem' }}></Column>
                     <Column className='dark:bg-gray-800 dark:text-gray-200' body={departmentBodyTemplate} header="Département" sortable style={{ minWidth: '8rem' }}></Column>
                     <Column className='dark:bg-gray-800 dark:text-gray-200' body={contractBodyTemplate} header="Contrat" sortable style={{ minWidth: '8rem' }}></Column>
-                    <Column className='dark:bg-gray-800 dark:text-gray-200' field="statut" header="Statut" body={statusBodyTemplate} sortable style={{ minWidth: '8rem' }}></Column>
+                    <Column className='dark:bg-gray-800 dark:text-gray-200' field="status" header="Statut" body={statusBodyTemplate} sortable style={{ minWidth: '8rem' }}></Column>
                     <Column className='dark:bg-gray-800 dark:text-gray-200' body={actionBodyTemplate} exportable={false} style={{ minWidth: '12rem' }}></Column>
                 </DataTable>
             </div>

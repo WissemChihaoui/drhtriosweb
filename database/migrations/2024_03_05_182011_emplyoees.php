@@ -31,8 +31,12 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('address')->nullable();
             $table->string('email')->nullable();
-            $table->string('category')->nullable(); // Assuming it's not a foreign key
+            $table->unsignedBigInteger('category_id')->nullable(); // Changed to foreign key
 
+            $table->foreign('category_id')->references('id')->on('categories')->onDelete('set null'); // Foreign key constraint
+
+            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->text('commentaire')->nullable();
             // Contract details moved to employee_contracts table
 
             $table->string('polyvalence')->nullable(); // Could be JSON or string

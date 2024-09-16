@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Stepper } from "primereact/stepper";
 import { StepperPanel } from "primereact/stepperpanel";
 import { Button } from "primereact/button";
@@ -6,6 +6,7 @@ import { InputText } from "primereact/inputtext";
 import { SelectButton } from 'primereact/selectbutton'
 import { Calendar } from 'primereact/calendar';
 import { InputMask } from 'primereact/inputmask';
+import { InputNumber } from 'primereact/inputnumber';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { Dropdown } from 'primereact/dropdown';
 import { FileUpload } from 'primereact/fileupload';
@@ -13,35 +14,41 @@ import { InputSwitch } from 'primereact/inputswitch';
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Toast } from 'primereact/toast';
 import { useForm } from "@inertiajs/react";
-const AddWorker = ({ auth, mustVerifyEmail, status, employees, departements,contractsType, type_salairs, polyvalences, categories }) => {
+import ToolbarField from "./Partials/Toolbar";
+        
+
+const EditWorker = ({auth,employee, categories, departements, contractsType, type_salairs, polyvalences, employee_contracts}) => {
+    console.log(employee);
     
-    
+    const [filteredFonctions, setFilteredFonctions] = useState([]);
     
     const stepperRef = useRef(null);
-    const genderOptions = ['Homme', 'Femme'];
-    
     const toast = useRef(null);
-  
-    
+
+    const genderOptions = ['Homme', 'Femme'];
+    const [currentContract, setCurrentContract] = useState(employee_contracts[employee_contracts.length-1])
+
     const { post, setData, data, errors } = useForm({
         // Personal details
-        name: '',
-        birthdate: null,  // Assuming you're using a Date object
-        gender: null,     // or a default value from genderOptions
-        phone: '',
-        address: '',
-        email: '',
-        category: null,  // or a default value from categories
-    
+        id: employee.id,
+        name: employee.name,
+        birthdate: new Date(employee.birthdate),  // Assuming you're using a Date object
+        gender: employee.gender,     // or a default value from genderOptions
+        phone: employee.phone,
+        address: employee.address,
+        email: employee.email,
+        category: employee.category_id,  // or a default value from categories
+        commentaire: employee.commentaire,
+        status: employee.status,
         // Company details
-        departement: null, // or a default value from depatements
-        fonction: null,   // or a default value from fonctions
-        contract: null,   // or a default value from contracts
-        embauche: null,   // Assuming you're using a Date object
-        start_date: null, // Assuming you're using a Date object
-        end_date: null,   // Assuming you're using a Date object
-        salary_type: null, // or a default value from salaryTypes
-        salary: '',
+        departement: employee.id_departement, // or a default value from depatements
+        fonction: employee.id_fonction,   // or a default value from fonctions
+        contract: currentContract.contract_id,   // or a default value from contracts
+        embauche: new Date(currentContract.hire_date),   // Assuming you're using a Date object
+        start_date: new Date(currentContract.contract_start_date), // Assuming you're using a Date object
+        end_date: new Date(currentContract.contract_end_date),   // Assuming you're using a Date object
+        salary_type: currentContract.salary_type_id, // or a default value from salaryTypes
+        salary: currentContract.amount,
     
         // Files
         resume: null,     // Or handle it based on file input requirements
@@ -49,9 +56,11 @@ const AddWorker = ({ auth, mustVerifyEmail, status, employees, departements,cont
         cin: null,        // Or handle it based on file input requirements
     
         // Polyvalences
-        polyvalence: []
+        polyvalences: employee.polyvalences.map((poly) => (poly.id)) || [],
     });
-    console.log('data', data);
+
+
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setData((prevData) => ({
@@ -59,63 +68,51 @@ const AddWorker = ({ auth, mustVerifyEmail, status, employees, departements,cont
             [name]: value,
         }));
     };
-    const [filteredFonctions, setFilteredFonctions] = useState([]);
-    // Handle special input (Calendar, Dropdown, etc.)
-    const handleDropdownChange = (name, value) => {
-        console.log(value)
+
+    const handleFileSelect = (event) => {
         setData((prevData) => ({
             ...prevData,
-            [name]: value
-        }));
-
-        if (name === 'departement') {
-            console.log('After Pick',departements);
-            
-            // Find the selected department and get its fonctions
-            const selectedDepartment = departements.find(dep => dep.id === value);
-            const fonctionsForDepartement = selectedDepartment ? selectedDepartment.fonctions : [];
-            setFilteredFonctions(fonctionsForDepartement);
-            setData((prevData) => ({
-                ...prevData,
-                fonction: null // Reset fonction when department changes
-            }));
-        }
+            [event.options.props.id]: event.files[0],
+        }))
     };
 
-   
+    useEffect(()=>{
+        if (data.departement){
+            const selectedDepartment = departements.find(dep => dep.id === data.departement);
+            const fonctionsForDepartement = selectedDepartment ? selectedDepartment.fonctions : [];
+            setFilteredFonctions(fonctionsForDepartement);
+        }
+    },[data.departement])
+
+    const handleDropdownChange = (name, value) => {
+        setData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    
+    };
     const handlePolyvalenceChange = (id, checked) => {
         setData((prevData) => {
             let updatedPolyvalence;
     
             if (checked) {
                 // Add the ID if it's checked and not already in the array
-                updatedPolyvalence = [...prevData.polyvalence, id];
+                updatedPolyvalence = [...prevData.polyvalences, id];
             } else {
                 // Remove the ID if it's unchecked
-                updatedPolyvalence = prevData.polyvalence.filter(polyId => polyId !== id);
+                updatedPolyvalence = prevData.polyvalences.filter(polyId => polyId !== id);
             }
     
             return {
                 ...prevData,
-                polyvalence: updatedPolyvalence, // Update polyvalence with the array of selected IDs
+                polyvalences: updatedPolyvalence, // Update polyvalence with the array of selected IDs
             };
         });
     };
     
-    const handleFileSelect = (event) => {
-        console.log(event.options.props.id);
-        
-        console.log('Selected file:', event.files[0]);
-
-        setData((prevData) => ({
-            ...prevData,
-            [event.options.props.id]: event.files[0],
-        }))
-    };
     
-
     const handleSubmit = () => {
-        post(route('add.worker'), {
+        post(route('edit.worker',data.id),{
             onError: (error) => {
                 console.log(error);
             },
@@ -123,16 +120,17 @@ const AddWorker = ({ auth, mustVerifyEmail, status, employees, departements,cont
                 toast.current.show({
                     severity: 'success',
                     summary: 'Success',
-                    detail: 'Worker added successfully.',
+                    detail: 'Mis à jour d"employée a été effectué.',
                     life: 3000
                 });
             }
-        });
-    };
+        })
+        console.log(data)
+    }
     
-   
     return (
-        <AuthenticatedLayout auth={auth} header={"Ajouter un employée"}>
+        <AuthenticatedLayout auth={auth} header={`Modifier l'employée #${data.id}`}>
+            <ToolbarField product={data} setData={setData} handleSubmit={handleSubmit}/>
             <div className="card">
                 <Stepper
                     ref={stepperRef}
@@ -201,6 +199,11 @@ const AddWorker = ({ auth, mustVerifyEmail, status, employees, departements,cont
                                         Catégorie est requis
                                     </small>
                                 </div>
+                                <div className="flex flex-column gap-2 md:col-span-2 lg:col-span-4">
+                                    <label htmlFor="commentaire">Commentaire</label>
+                                    <InputTextarea id="commentaire" autoResize  rows={5} name="commentaire" value={data.commentaire} onChange={handleChange}/>
+                                    
+                                </div>
                             </div>
                         </div>
                         <div className="flex py-4">
@@ -224,6 +227,7 @@ const AddWorker = ({ auth, mustVerifyEmail, status, employees, departements,cont
                                         aria-describedby="username-help"
                                         invalid
                                         disabled
+                                        value={data.id}
                                     />
                                     <small className="text-red-500" id="username-help">
                                     Id Employé est génerer
@@ -319,6 +323,7 @@ const AddWorker = ({ auth, mustVerifyEmail, status, employees, departements,cont
                                     <label htmlFor="resume">CV</label>
                                     <Toast ref={toast}></Toast>
                                     <FileUpload uploadHandler={handleFileSelect} auto   id="resume"  mode="basic"  accept="image/*" maxFileSize={1000000} customUpload />
+                                    <a size="small" className="text-xs" href={`/storage/${employee.resume}`} target="_blank">Voir le fichier <i className="ti ti-file"></i></a>
                                     <small className="text-red-500" id="username-help">
                                         Ce document est pas télécharger!
                                     </small>
@@ -327,6 +332,7 @@ const AddWorker = ({ auth, mustVerifyEmail, status, employees, departements,cont
                                     <label htmlFor="document">Document</label>
                                     <Toast ref={toast}></Toast>
                                     <FileUpload uploadHandler={handleFileSelect} auto   id="document" mode="basic"  accept="image/*" maxFileSize={1000000} customUpload />
+                                    <a size="small" className="text-xs" href={`/storage/${employee.document}`} target="_blank">Voir le fichier <i className="ti ti-file"></i></a>
                                     <small className="text-red-500" id="username-help">
                                         Ce document est pas télécharger!
                                     </small>
@@ -335,6 +341,7 @@ const AddWorker = ({ auth, mustVerifyEmail, status, employees, departements,cont
                                     <label htmlFor="cin">CIN</label>
                                     <Toast ref={toast}></Toast>
                                     <FileUpload uploadHandler={handleFileSelect}  auto  id="cin" mode="basic"  accept="image/*" maxFileSize={1000000} customUpload />
+                                    <a size="small" className="text-xs" href={`/storage/${employee.cin}`} target="_blank">Voir le fichier <i className="ti ti-file"></i></a>
                                     <small className="text-red-500" id="username-help">
                                         Ce document est pas télécharger!
                                     </small>
@@ -368,7 +375,7 @@ const AddWorker = ({ auth, mustVerifyEmail, status, employees, departements,cont
                                     <label htmlFor={`polyvalence-${polyvalence.id}`}>{polyvalence.name}</label>
                                     <InputSwitch
                                         id={polyvalence.id}
-                                        checked={data.polyvalence.includes(polyvalence.id)} // Check if the ID is in the array
+                                        checked={data.polyvalences.includes(polyvalence.id)} // Check if the ID is in the array
                                         onChange={(e) => handlePolyvalenceChange(polyvalence.id, e.value)}
                                     />
                                 </div>
@@ -385,17 +392,13 @@ const AddWorker = ({ auth, mustVerifyEmail, status, employees, departements,cont
                                     stepperRef.current.prevCallback()
                                 }
                             />
-                            <Button
-                                onClick={handleSubmit}
-                                label="Ajouter"
-                                icon="ti ti-check"
-                            />
+                            
                         </div>
                     </StepperPanel>
                 </Stepper>
             </div>
         </AuthenticatedLayout>
     );
-};
+}
 
-export default AddWorker;
+export default EditWorker
