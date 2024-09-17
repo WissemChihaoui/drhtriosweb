@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::disableForeignKeyConstraints();
         Schema::create('type_salairs', function (Blueprint $table) {
             $table->id();
-            $table->string('type');
+            $table->enum('type', ['Mensuelle', 'Par Heure']);
             $table->timestamps();
         });
         Schema::enableForeignKeyConstraints();

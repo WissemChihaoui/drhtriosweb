@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             UsersTableSeeder::class,
             CategoriesTableSeeder::class,
             SanctionsTableSeeder::class,
+            CongesTableSeeder::class,
             // Add other seeders here if you have any
         ]);
     }

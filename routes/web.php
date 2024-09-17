@@ -10,6 +10,10 @@ use App\Http\Controllers\DepartementController;
 use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\PolyvalencesController;
 use App\Http\Controllers\SanctionsController;
+use App\Http\Controllers\CategoriesController;
+use App\Http\Controllers\ContractController;
+use App\Http\Controllers\CongesController;
+use App\Http\Controllers\PresenceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -76,4 +80,30 @@ Route::middleware(['auth','verified'])->group(function () {
     Route::post('/sanctions/add', [SanctionsController::class, 'storeOrUpdate'])->name('sanctions.store');
 });
 
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/categories', [CategoriesController::class, 'index'])->name('categories');
+    Route::delete('/categories/{id}', [CategoriesController::class, 'destroy'])->name('categories.destroy');
+    Route::post('/categories/delete', [CategoriesController::class, 'destroyMultiple'])->name('categories.destroyMultiple');
+    Route::post('/categories/add', [CategoriesController::class, 'storeOrUpdate'])->name('categories.store');
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/contracts', [ContractController::class, 'index'])->name('contracts');
+    Route::delete('/contracts/{id}', [ContractController::class, 'destroy'])->name('contracts.destroy');
+    Route::post('/contracts/delete', [ContractController::class, 'destroyMultiple'])->name('contracts.destroyMultiple');
+    Route::post('/contracts/add', [ContractController::class, 'storeOrUpdate'])->name('contracts.store');
+
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/conges', [CongesController::class, 'index'])->name('conges');
+    Route::delete('/conges/{id}', [CongesController::class, 'destroy'])->name('conges.destroy');
+    Route::post('/conges/delete', [CongesController::class, 'destroyMultiple'])->name('conges.destroyMultiple');
+    Route::post('/conges/add', [CongesController::class, 'storeOrUpdate'])->name('conges.store');
+
+});
+
+Route::middleware(['auth','verified'])->group(function() {
+    Route::get('/presence', [PresenceController::class, 'index'])->name('presence');
+});
 require __DIR__.'/auth.php';

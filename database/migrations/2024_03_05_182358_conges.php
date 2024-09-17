@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::disableForeignKeyConstraints();
         Schema::create('conges', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_societe');
+            $table->unsignedBigInteger('id_societe')->default(1);
             $table->foreign('id_societe')->references('id')->on('societes')->onDelete('cascade');
             $table->string('nom_conge');
             $table->timestamps();

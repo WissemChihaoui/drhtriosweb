@@ -15,10 +15,10 @@ return new class extends Migration
         Schema::disableForeignKeyConstraints();
         Schema::create('emp_presents', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_emp');
-            $table->foreign('id_emp')->references('id')->on('employees')->onDelete('cascade');
-            $table->date('date');
-            $table->string('type');
+            $table->unsignedBigInteger('employee_id');
+            $table->foreign('employee_id')->references('id')->on('employees')->onDelete('cascade');
+            $table->string('month');
+            $table->json('presence_data'); // JSON column to store daily presence
             $table->timestamps();
         });
         Schema::enableForeignKeyConstraints();

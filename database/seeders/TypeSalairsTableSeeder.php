@@ -17,9 +17,6 @@ class TypeSalairsTableSeeder extends Seeder
         DB::table('type_salairs')->insert([
             ['type' => 'Mensuelle', 'created_at' => now(), 'updated_at' => now()],
             ['type' => 'Par Heure', 'created_at' => now(), 'updated_at' => now()],
-            ['type' => 'Journalier', 'created_at' => now(), 'updated_at' => now()],
-            ['type' => 'Hebdomadaire', 'created_at' => now(), 'updated_at' => now()],
-            // Add more types as needed
         ]);
     }
 }

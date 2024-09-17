@@ -7,5 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Contarts extends Model
 {
-    use HasFactory;
+    protected $fillable = ['name'];
+
+    public function employees()
+    {
+        return $this->hasMany(Employee::class, 'contarts_id');
+    }
+
 }

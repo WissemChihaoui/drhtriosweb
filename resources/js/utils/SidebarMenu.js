@@ -22,12 +22,9 @@ export const Menu = [
             },
             {
                 label: "Voir la présence",
-                link:"dashboard"
+                link:"presence"
             },
-            {
-                label: "Type des congés",
-                link:"dashboard"
-            },
+            
         ]
     },
     {
@@ -76,9 +73,22 @@ export const Menu = [
         icon:"building-warehouse"
     },
     {
-        label: "Dépenses",
-        link:"dashboard",
-        children:null,
-        icon:"moneybag"
+        label: "Paramétres",
+        link:"#",
+        children:[
+            {
+                label: "Catégories",
+                link:"categories"
+            },
+            {
+                label: "Contract",
+                link:"contracts"
+            },
+            {
+                label: "Type des congés",
+                link:"conges"
+            },
+        ],
+        icon:"settings-2"
     },
 ]
