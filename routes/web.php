@@ -106,4 +106,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::middleware(['auth','verified'])->group(function() {
     Route::get('/presence', [PresenceController::class, 'index'])->name('presence');
 });
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/create-presence',[PresenceController::class, 'createPresencePage'])->name('create.presence');
+});
 require __DIR__.'/auth.php';

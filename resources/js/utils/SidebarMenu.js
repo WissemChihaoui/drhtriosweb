@@ -18,7 +18,7 @@ export const Menu = [
         children:[
             {
                 label: "Marque la présence",
-                link:"dashboard"
+                link:"create.presence"
             },
             {
                 label: "Voir la présence",

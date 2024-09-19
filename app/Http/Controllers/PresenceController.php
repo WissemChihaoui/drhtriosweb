@@ -18,4 +18,18 @@ class PresenceController extends Controller {
             'conges' => $conges,
         ]);
     }
+
+    public function createPresencePage(){
+        $presences = Emp_presents::select('emp_presents.*', 'type_salairs.type as typesalaire')->with('employee')
+        ->leftJoin('employee_contracts', 'employee_contracts.employee_id', 'emp_presents.employee_id')
+        ->leftJoin('type_salairs', 'type_salairs.id', 'employee_contracts.salary_type_id')
+        
+        ->get();
+        $conges = Conges::all();
+
+        return Inertia::render('Presences/CreatePresence', [
+            'presences' => $presences,
+            'conges' => $conges,
+        ]);
+    }
 }

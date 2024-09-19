@@ -45,12 +45,12 @@ class MarkDailyPresence extends Command
             $presenceData = json_decode($presenceRecord->presence_data, true) ?? [];
 
             $presenceData[$day] = [
-                'status' => 'present',
+                'status' => 1,
                 'shift' => $shift,
                 'hours' => $hours,
                 'conge_id' => null,
                 'raison' => null,
-                'action' => 'worked',
+                'action' => 1,
             ];
 
             DB::table('emp_presents')
