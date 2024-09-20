@@ -25,7 +25,7 @@ class MarkDailyPresence extends Command
                 ->first();
             $salary_type = Employee_contracts::where('employee_id', $worker -> id)->first();
             // dd($salary_type->salary_type_id);
-            $shift = $salary_type->salary_type_id === 1 ? 'full_day' : 'custo_hours';
+            $shift = $salary_type->salary_type_id === 1 ? 1 : 3;
             $hours = $salary_type->salary_type_id === 1 ? null : 8.5;
 
             if (!$presenceRecord) {

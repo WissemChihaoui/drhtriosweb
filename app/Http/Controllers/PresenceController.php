@@ -32,4 +32,8 @@ class PresenceController extends Controller {
             'conges' => $conges,
         ]);
     }
+
+    public function createPresencePageCustomDate($date){
+        dd($date);
+    }
 }

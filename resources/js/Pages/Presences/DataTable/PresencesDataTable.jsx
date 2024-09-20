@@ -43,7 +43,7 @@ const PresencesDataTable = ({ presences, conges }) => {
         const data = JSON.parse(rowData.presence_data);
         const totalDays = Object.keys(data).length;
         const presentDays = Object.values(data).filter(
-            (entry) => entry.status === "1"
+            (entry) => entry.status == "1"
         ).length;
         const percentage = (presentDays / totalDays) * 100;
 
