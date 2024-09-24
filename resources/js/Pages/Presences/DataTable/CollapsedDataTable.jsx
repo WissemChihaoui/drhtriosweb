@@ -7,24 +7,37 @@ import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { classNames } from 'primereact/utils';
 import { Dropdown } from 'primereact/dropdown';
+import { useForm } from '@inertiajs/react';
 
 const CollapsedDataTable = ({rowData, conges}) => {
-    const [selectedRow, setSelectedRow] = useState(null)
+    const {data, setData, post} = useForm({
+        action: null,
+        conge_id: null,
+        date : null,
+        hours: null,
+        raison: null,
+        shift: null,
+        status: null
+    })
+    // const [data, setData] = useState(null)
     const [isOpenModal, setIsOpenModal] = useState(false);
     const [submitted, setSubmitted] = useState(false);
+    const [id, setId] = useState(rowData.id)
+    console.log('Row Data,' , rowData);
+    
     
     const statusAdmin = [
-        {severity:'secondary', label: 'Aucune', id:0 },
-        {severity:'warning', label: 'En Attente' , id:1},
+        {severity:'warning', label: 'En Attente' , id:0},
+        {severity:'secondary', label: 'Aucune', id:1 },
         {severity:'danger', label: 'Rejeté', id:2 },
         {severity:'success', label: 'Approuvé' , id:3},
     ]
     const hideDialog = () => {
         setIsOpenModal(false)
-        setSelectedRow(null);
+        setData(null);
     }
     const editOpen = (rowDataSelected) => {
-        setSelectedRow(rowDataSelected);
+        setData(rowDataSelected);
         setIsOpenModal(true)
 
         console.log(rowDataSelected);
@@ -36,6 +49,14 @@ const CollapsedDataTable = ({rowData, conges}) => {
             ...presenceData[date]
         }));
     };
+    const shiftTemplate = (rowData) => {
+        const a = ['', 'Un Jour', 'Demi Jour', ''];
+        // console.log(a[rowData.raison]);
+        console.log('from ',rowData);
+        
+        
+        return rowData.status == 1 ? a[rowData.shift] : null;
+    }
     const statusCollapsedTemplate = (rowData) => {
         return <Tag severity={rowData.status == 1 ? 'success' : 'danger'}>{rowData.status == 1 ? 'Présent' : 'Absent'}</Tag>
     }
@@ -51,9 +72,9 @@ const CollapsedDataTable = ({rowData, conges}) => {
     const actionsTemplate = (rowData) => {
         return <Button severity='warning' rounded icon='ti ti-edit' onClick={()=>editOpen(rowData)}/>
     }
-    const data = JSON.parse(rowData.presence_data);
+    const presenceData = JSON.parse(rowData.presence_data);
     
-    const transformedData = transformPresenceData(data);
+    const transformedData = transformPresenceData(presenceData);
     console.log(conges);
     
     const congeTemplate = (rowData) => {
@@ -69,7 +90,23 @@ const CollapsedDataTable = ({rowData, conges}) => {
     }
 
     const handleSubmit =()=> {
-        console.log(selectedRow);
+        hideDialog();
+        console.log('Submitted Data',data);
+        setData(data)
+        console.log(id);
+        post(route('create.presence.edit', id), {
+            onError: (error) => {
+                console.error("Submission Error:", error);
+            },
+            onSuccess: () => {
+                toast.current.show({
+                    severity: 'success',
+                    summary: 'Success',
+                    detail: 'Les présences ont été mises à jour avec succès.',
+                    life: 3000
+                });
+            }
+        })
     }
 
     const productDialogFooter = (
@@ -80,20 +117,26 @@ const CollapsedDataTable = ({rowData, conges}) => {
     );
 
     const handleCongeChange = (e) => {
-        setSelectedRow({
-            ...selectedRow,
-
+        setData({
+            ...data,
             conge_id: e.value
         })
     }
     const handleStatusChange = (e) => {
-        setSelectedRow({
-            ...selectedRow,
+        setData({
+            ...data,
 
-            status: e.value
+            action: e.value
+        })
+    }
+    const handleRaisonChange = (e) =>{
+        setData({
+            ...data,
+            raison: e.target.value
         })
     }
 
+    
    
     
     return (
@@ -103,7 +146,7 @@ const CollapsedDataTable = ({rowData, conges}) => {
                 <DataTable paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]} value={transformedData} responsiveLayout="scroll" sortField="date" sortOrder={-1}>
                     <Column field="date" header="Date" sortable/>
                     <Column field="status" body={statusCollapsedTemplate} header="Statut de présence" sortable />
-                    <Column field="shift" header="Shift" sortable />
+                    <Column field="shift" header="Shift" sortable body={shiftTemplate}/>
                     <Column field="hours" header="Nb des heures" sortable />
                     <Column field="conge_id" header="Type" sortable body={congeTemplate}/>
                     <Column field="raison" header="Raison" sortable />
@@ -111,21 +154,21 @@ const CollapsedDataTable = ({rowData, conges}) => {
                     <Column header="Actions" body={actionsTemplate}/>
                 </DataTable>
             </div>
-            {selectedRow && <Dialog visible={isOpenModal} style={{ width: '32rem' }} breakpoints={{ '960px': '75vw', '641px': '90vw' }} header="Modifier l'absence" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
+            {data && <Dialog visible={isOpenModal} style={{ width: '32rem' }} breakpoints={{ '960px': '75vw', '641px': '90vw' }} header="Modifier l'absence" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
             <div className="">
                 <div className="mb-2">
-                    Raison: <span className='font-bold '>{selectedRow.raison || ""}</span>
+                    Raison: <InputText value={data.raison} onChange={(e)=>handleRaisonChange(e)}/>
                 </div>
                 <div className="mb-2">
                     Type de congé: 
                     <div className="font-bold">
-                        <Dropdown options={conges} optionLabel='nom_conge' optionValue='id' value={selectedRow.conge_id} onChange={(e)=>handleCongeChange(e)}/>
+                        <Dropdown options={conges} optionLabel='nom_conge' optionValue='id' value={data.conge_id} onChange={(e)=>handleCongeChange(e)}/>
                     </div>
                 </div>
                 <div className="mb-2">
-                    Type de congé: 
+                    Statut Administrative: 
                     <div className="font-bold">
-                        <Dropdown options={statusAdmin} optionLabel='label' optionValue='id' value={selectedRow.status} onChange={(e)=>handleStatusChange(e)}/>
+                        <Dropdown options={statusAdmin} optionLabel='label' optionValue='id' value={data.action} onChange={(e)=>handleStatusChange(e)}/>
                     </div>
                 </div>
                 

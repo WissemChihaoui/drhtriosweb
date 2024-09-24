@@ -110,5 +110,8 @@ Route::middleware(['auth','verified'])->group(function() {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/create-presence',[PresenceController::class, 'createPresencePage'])->name('create.presence');
     Route::get('/create-presence/{date}',[PresenceController::class, 'createPresencePageCustomDate'])->name('create.presence.date');
+
+    Route::post('/create-presence/{date}', [PresenceController::class, 'submitPresence'])->name('create.presence.submit');
+    Route::post('/create-presence/edit/{id}', [PresenceController::class, 'editPresence'])->name('create.presence.edit');
 });
 require __DIR__.'/auth.php';
