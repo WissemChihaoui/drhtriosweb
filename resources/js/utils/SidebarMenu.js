@@ -51,7 +51,7 @@ export const Menu = [
         children:[
             {
                 label: "Liste des questionnaire",
-                link:"dashboard"
+                link:"questionnaire"
             },
             {
                 label: "Liste des sanctions",

@@ -14,6 +14,7 @@ use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\ContractController;
 use App\Http\Controllers\CongesController;
 use App\Http\Controllers\PresenceController;
+use App\Http\Controllers\QuestionnaireController;
 
 /*
 |--------------------------------------------------------------------------
@@ -105,6 +106,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::middleware(['auth','verified'])->group(function() {
     Route::get('/presence', [PresenceController::class, 'index'])->name('presence');
+    Route::get('/presence/{id}', [PresenceController::class, 'calendarIndex'])->name('calendar.index');
+    Route::get('/questionnaire', [QuestionnaireController::class, 'index'])->name('questionnaire');
+
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {

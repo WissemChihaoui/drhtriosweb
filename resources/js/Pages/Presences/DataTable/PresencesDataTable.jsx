@@ -51,9 +51,12 @@ const PresencesDataTable = ({ presences, conges }) => {
     };
 
     const mainActionTemplate = (rowData) => {
+        const date = rowData.month
         return (
             <div className="flex gap-1">
-                <Button type="button" icon="ti ti-calendar" rounded></Button>
+                <Link href={route("calendar.index", { id: rowData.employee_id, date: date })}>
+                    <Button type="button" icon="ti ti-calendar" rounded></Button>
+                </Link>
                 <Link
                     href={route("edit.worker.page", {
                         id: rowData.employee_id,

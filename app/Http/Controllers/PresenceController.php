@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 use App\Models\Emp_presents;
 use App\Models\Conges;
+use App\Models\Employee;
 
 class PresenceController extends Controller {
     public function index(){
@@ -109,6 +110,15 @@ class PresenceController extends Controller {
     
         // Redirect with success message
         return redirect()->route('presence')->with('success', 'Présence modifiée avec succès');
+    }
+    public function calendarIndex($id){
+        $presence = Emp_presents::all()->where('employee_id', $id);
+        $employee = Employee::all();
+        // dd($presence);
+        return Inertia::render('Presences/PresenceCalendar', [
+            'presences' => $presence,
+            'employees' => $employee
+        ]);
     }
     
 

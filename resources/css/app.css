@@ -15,3 +15,12 @@
 .flex-column{
     flex-direction: column;
 }
+.fc-event.success {
+  background-color: #28a745; /* Green for present */
+  border: none;
+}
+
+.fc-event.danger {
+  background-color: #dc3545; /* Red for absent */
+  border: none;
+}
