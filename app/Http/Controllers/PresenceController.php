@@ -112,7 +112,7 @@ class PresenceController extends Controller {
         return redirect()->route('presence')->with('success', 'Présence modifiée avec succès');
     }
     public function calendarIndex($id){
-        $presence = Emp_presents::all()->where('employee_id', $id);
+        $presence = Emp_presents::where('employee_id', $id)->get();
         $employee = Employee::all();
         // dd($presence);
         return Inertia::render('Presences/PresenceCalendar', [

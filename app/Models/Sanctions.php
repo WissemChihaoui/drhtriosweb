@@ -8,4 +8,9 @@ class Sanctions extends Model
 {
     use HasFactory;
     protected $fillable = ['id', 'type_sanction'];
+
+    public function questionnaires()
+    {
+        return $this->hasMany(Questionnaire::class, 'id_sanction');
+    }
 }

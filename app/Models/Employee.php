@@ -50,5 +50,9 @@ class Employee extends Model
     {
         return $this->hasMany(Emp_presents::class, 'employee_id');
     }
+    public function questionnaires()
+    {
+        return $this->hasMany(Questionnaire::class, 'id_emp');
+    }
 }
 

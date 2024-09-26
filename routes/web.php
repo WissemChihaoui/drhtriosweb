@@ -107,8 +107,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::middleware(['auth','verified'])->group(function() {
     Route::get('/presence', [PresenceController::class, 'index'])->name('presence');
     Route::get('/presence/{id}', [PresenceController::class, 'calendarIndex'])->name('calendar.index');
-    Route::get('/questionnaire', [QuestionnaireController::class, 'index'])->name('questionnaire');
-
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -117,5 +115,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::post('/create-presence/{date}', [PresenceController::class, 'submitPresence'])->name('create.presence.submit');
     Route::post('/create-presence/edit/{id}', [PresenceController::class, 'editPresence'])->name('create.presence.edit');
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/questionnaire', [QuestionnaireController::class, 'index'])->name('questionnaire');
+    Route::post('/questionnaire/add', [QuestionnaireController::class, 'store'])->name('questionnaire.store');
 });
 require __DIR__.'/auth.php';
