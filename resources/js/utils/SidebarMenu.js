@@ -18,7 +18,7 @@ export const Menu = [
         children:[
             {
                 label: "Marque la présence",
-                link:"create.presence"
+                link:"attendances"
             },
             {
                 label: "Voir la présence",
@@ -26,18 +26,6 @@ export const Menu = [
             },
             
         ]
-    },
-    {
-        label: "Les absents",
-        link:"dashboard",
-        children:null,
-        icon:"user-cancel"
-    },
-    {
-        label: "Absentiesme",
-        link:"dashboard",
-        children:null,
-        icon:"user-question"
     },
     {
         label: "Département",

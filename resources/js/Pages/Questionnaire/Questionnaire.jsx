@@ -40,17 +40,17 @@ useEffect(()=>{
      <QuestionnaireDataTable 
      products={questionnairesData} 
      setProducts={setQuestionnairesData}
-     productDialog={productDialog}
+    //  productDialog={productDialog}
     setProductDialog={setProductDialog}
     product={product}
     setProduct={setProduct}
-     hideDialog={hideDialog}
+    //  hideDialog={hideDialog}
      toast={toast}
-     submitted={submitted}
-     sanctions={sanctions}
-     setSubmitted={setSubmitted}
-     emptyQuest={emptyQuest }
-     employees={employees}
+    //  submitted={submitted}
+    //  sanctions={sanctions}
+    //  setSubmitted={setSubmitted}
+    //  emptyQuest={emptyQuest }
+    //  employees={employees}
      
      />
      {

@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 
-const CalendarData = ({ initial, allPresenceData }) => {
+const CalendarData = ({ initial, allPresenceData, currentDate }) => {
     console.log('initial :', initial);
-
+    const [formattedCurrentDate, setFormattedCurrentDate] = useState(null)
     const handleDateClick = (arg) => {
         alert(arg.dateStr);
     };
@@ -15,8 +15,20 @@ const CalendarData = ({ initial, allPresenceData }) => {
         const [day, month, year] = dateString.split('-');
         return `${year}-${month}-${day}`;
     };
+    const formatCurrentDate = (dateObj) => {
+        const year = dateObj.getFullYear();
+        const month = (`0${dateObj.getMonth() + 1}`).slice(-2); // Months are 0-based, so we add 1 and pad with 0
+        const day = (`0${dateObj.getDate()}`).slice(-2); // Pad day with 0 if needed
+        return `${year}-${month}-${day}`;
+    };
+    useEffect(()=>{
+        setFormattedCurrentDate(formatCurrentDate(new Date(currentDate)));
+    },[currentDate])
 
-    const formattedInitialDate = formatDateToYMD(initial);
+    // Function to convert Date object to YYYY-MM-DD format
+    
+
+     // Format the currentDate to YYYY-MM-DD
 
     // Extract events from all presence data
     const extractEventsFromAllData = (allData) => {
@@ -56,11 +68,11 @@ const CalendarData = ({ initial, allPresenceData }) => {
 
     const events = extractEventsFromAllData(allPresenceData);
 
-    
     return (
         <FullCalendar
             plugins={[dayGridPlugin, interactionPlugin]}
             initialView="dayGridMonth"
+            initialDate={formattedCurrentDate}
             events={events}
             dateClick={handleDateClick}
             locales={'fr/FR'}

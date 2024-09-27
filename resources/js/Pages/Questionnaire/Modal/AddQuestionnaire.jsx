@@ -6,12 +6,11 @@ import { Dropdown } from 'primereact/dropdown';
 import { Calendar } from 'primereact/calendar';
 import { useForm } from '@inertiajs/react';
 
-const AddQuestionnaire = ({productDialog,hideDialog,toast,submitted,product,setSubmitted, employees, sanctions, setProduct}) => {
-    const { data, setData, post } = useForm();
+const AddQuestionnaire = ({productDialog,hideDialog,toast,submitted,setSubmitted,product, employees, sanctions}) => {
+    const { data, setData, post } = useForm(product);
     
     const saveProduct = () => {
         setSubmitted(true);
-        setData(product)
         console.log('Submitted :',data)
         post(route('questionnaire.store'),{
             onError: (error) => {
@@ -36,17 +35,13 @@ const AddQuestionnaire = ({productDialog,hideDialog,toast,submitted,product,setS
     };
     const productDialogFooter = (
         <React.Fragment>
-            <Button label="Cancel" icon="ti ti-times" outlined onClick={hideDialog} />
-            <Button label="Save" icon="ti ti-check" onClick={saveProduct} />
+            <Button label="Annuler" className='mr-2' icon="ti ti-x" outlined onClick={hideDialog} />
+            <Button label="Enregistrer" icon="ti ti-check" onClick={saveProduct} />
         </React.Fragment>
     );
     const onInputChange = (e, name) => {
-        const val = (e.target && e.target.value) || '';
-        let _product = { ...product };
-
-        _product[`${name}`] = val;
-
-        setProduct(_product);
+        const val = e.target.value;
+        setData({ ...data, [name]: val });
     };
   return (
     <Dialog visible={productDialog} style={{ width: '32rem' }} breakpoints={{ '960px': '75vw', '641px': '90vw' }} header="Ajouter un questionnaire" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
@@ -55,27 +50,27 @@ const AddQuestionnaire = ({productDialog,hideDialog,toast,submitted,product,setS
                     <label htmlFor="name" className="font-bold">
                         Employée
                     </label>
-                   <Dropdown options={employees} value={product.id_emp} optionLabel='name' optionValue='id' onChange={(e) => onInputChange(e, 'id_emp')}/>
-                    {submitted && !product.id_emp && <small className="p-error">Employée est requis.</small>}
+                   <Dropdown options={employees} value={data.id_emp} optionLabel='name' optionValue='id' onChange={(e) => onInputChange(e, 'id_emp')}/>
+                    {submitted && !data.id_emp && <small className="p-error">Employée est requis.</small>}
                 </div>
                 <div className="field mb-2">
                     <label htmlFor="name" className="font-bold">
                         Sanction
                     </label>
-                   <Dropdown options={sanctions} value={product.id_sanction} optionLabel='type_sanction' optionValue='id' onChange={(e) => onInputChange(e, 'id_sanction')}/>
-                    {submitted && !product.id_sanction && <small className="p-error">Sanction est requis.</small>}
+                   <Dropdown options={sanctions} value={data.id_sanction} optionLabel='type_sanction' optionValue='id' onChange={(e) => onInputChange(e, 'id_sanction')}/>
+                    {submitted && !data.id_sanction && <small className="p-error">Sanction est requis.</small>}
                 </div>
                 <div className="field mb-2">
                     <label htmlFor="description" className="font-bold">
                         Description
                     </label>
-                    <InputTextarea id="description" value={product.description} onChange={(e) => onInputChange(e, 'description')} required rows={3} cols={20} />
+                    <InputTextarea id="description" value={data.description} onChange={(e) => onInputChange(e, 'description')} required rows={3} cols={20} />
                 </div>
                 <div className="field mb-2">
                     <label htmlFor="date" className="font-bold">
                         Date
                     </label>
-                    <Calendar value={product.date} onChange={(e)=>onInputChange(e, 'date')}/>
+                    <Calendar value={data.date} onChange={(e)=>onInputChange(e, 'date')}/>
                 </div>
 
             </Dialog>

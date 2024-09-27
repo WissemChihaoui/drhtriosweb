@@ -110,15 +110,17 @@ Route::middleware(['auth','verified'])->group(function() {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/create-presence',[PresenceController::class, 'createPresencePage'])->name('create.presence');
-    Route::get('/create-presence/{date}',[PresenceController::class, 'createPresencePageCustomDate'])->name('create.presence.date');
+    Route::get('/attendances',[PresenceController::class, 'createPresencePage'])->name('attendances');
+    Route::get('/attendances/{date}',[PresenceController::class, 'createPresencePageCustomDate'])->name('create.presence.date');
 
-    Route::post('/create-presence/{date}', [PresenceController::class, 'submitPresence'])->name('create.presence.submit');
-    Route::post('/create-presence/edit/{id}', [PresenceController::class, 'editPresence'])->name('create.presence.edit');
+    Route::post('/attendances/{date}', [PresenceController::class, 'submitPresence'])->name('create.presence.submit');
+    Route::post('/attendances/edit/{id}', [PresenceController::class, 'editPresence'])->name('create.presence.edit');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/questionnaire', [QuestionnaireController::class, 'index'])->name('questionnaire');
     Route::post('/questionnaire/add', [QuestionnaireController::class, 'store'])->name('questionnaire.store');
+    Route::delete('/questionnaire/{id}', [QuestionnaireController::class, 'destroy'])->name('questionnaire.destroy');
+    Route::post('questionnaire/delete', [QuestionnaireController::class, 'destroyMultiple'])->name('questionnaire.destroyMultiple');
 });
 require __DIR__.'/auth.php';

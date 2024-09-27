@@ -3,10 +3,18 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import CalendarData from './Calendar/CalendarData';
 import { Dropdown } from 'primereact/dropdown';
 import { usePage, router  } from '@inertiajs/react';
+import { Calendar } from 'primereact/calendar';
 
 const PresenceCalendar = ({ auth, presences, employees }) => {
     const { url } = usePage();
     const id = url.split('/').pop();
+
+    const getDefaultMonth = () => {
+        const today = new Date();
+        return new Date(today.getFullYear(), today.getMonth(), 1);
+    };
+
+    const [date, setDate] = useState(getDefaultMonth());
     
     // Set initial state with the selected employee ID
     const [selectedEmployee, setSelectedEmployee] = useState(id);
@@ -37,12 +45,13 @@ const PresenceCalendar = ({ auth, presences, employees }) => {
                             optionLabel="name" 
                             placeholder="Select an Employee" 
                             filter  
-                            className="w-full md:w-14rem" 
+                            className="w-full md:w-14rem mb-2" 
                         />
+                        <Calendar className='w-full' view='month' dateFormat='mm/yy' value={date} onChange={(e)=>setDate(e.value)}/>
                     </div>   
                 </div>
-                <div className="col-span-3 p-2">
-                    <CalendarData initial={presences[0].month} allPresenceData={allPresenceData} />
+                <div className="col-span-3 p-2 bg-white rounded-md dark:bg-slate-700 dark:text-white">
+                    <CalendarData initial={presences[0].month} allPresenceData={allPresenceData} currentDate={date}/>
                 </div>
             </div>
         </AuthenticatedLayout>

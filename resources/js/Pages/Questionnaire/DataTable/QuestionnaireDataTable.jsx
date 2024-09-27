@@ -14,10 +14,11 @@ import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { Calendar } from 'primereact/calendar';
-
-export default function QuestionnaireDataTable({products,setProducts,productDialog,setProductDialog,product, employees,setProduct,hideDialog, sanctions,toast, submitted,setSubmitted,emptyQuest }) {
+import {  useForm } from "@inertiajs/react";
+export default function QuestionnaireDataTable({products,setProducts,product,toast, setProductDialog,setProduct }) {
     
-
+    const { setData, post } = useForm({ ids: [] });
+    const { delete: destroy, processing, reset } = useForm();
 
     
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
@@ -26,13 +27,9 @@ export default function QuestionnaireDataTable({products,setProducts,productDial
     const [globalFilter, setGlobalFilter] = useState(null);
     const dt = useRef(null);
 
-  
-    const openNew = () => {
-        setProduct(emptyQuest);
-        setSubmitted(false);
-        setProductDialog(true);
-    };
-
+    const exportCSV = () => {
+        dt.current.exportCSV();
+    };    
     const hideDeleteProductDialog = () => {
         setDeleteProductDialog(false);
     };
@@ -41,10 +38,83 @@ export default function QuestionnaireDataTable({products,setProducts,productDial
         setDeleteProductsDialog(false);
     };
 
-    
-    const editProduct = (product) => {
-        setProduct({ ...product });
-        setProductDialog(true);
+    const closeModal = () => {
+        setDeleteProductDialog(false);
+    };
+
+    const deleteProduct = (e) => {
+        e.preventDefault();
+        if (product && product.id) {
+            destroy(route("questionnaire.destroy", product.id), {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setProducts(
+                        products.filter(
+                            (productOld) => productOld.id !== product.id
+                        )
+                    );
+                    closeModal();
+                    toast.current.show({
+                        severity: "success",
+                        summary: "Supprimé",
+                        detail: "Questionnaire a été Supprimé",
+                        life: 3000,
+                    });
+                }, // Close modal if successful
+                onError: () => {
+                    toast.current.show({
+                        severity: "error",
+                        summary: "Erreur",
+                        detail: "Erreur lors du suppression ",
+                        life: 3000,
+                    });
+                },
+                onFinish: () => reset(), // Reset form state on finish
+            });
+    }
+    };
+    const confirmDeleteSelected = () => {
+        setDeleteProductsDialog(true);
+    };
+    useEffect(() => {
+        if (selectedProducts) {
+            const idsToDelete = selectedProducts
+                .map((product) => product.id);
+            setData({ ids: idsToDelete });
+            console.log("Products to delete:", idsToDelete);
+        }
+    }, [selectedProducts]);
+    const deleteSelectedProducts = () => {
+        const idsToDelete = selectedProducts.map((product) => product.id);
+        console.log("IDS", idsToDelete);
+
+        post(route("questionnaire.destroyMultiple"), {
+            method: "post", 
+            onSuccess: () => {
+                setDeleteProductsDialog(false);
+                setSelectedProducts(null);
+                setProducts(
+                    products.filter(
+                        (product) => !idsToDelete.includes(product.id)
+                    )
+                );
+                toast.current.show({
+                    severity: "success",
+                    summary: "Successful",
+                    detail: "Employees Deleted",
+                    life: 3000,
+                });
+            },
+            onError: () => {
+                toast.current.show({
+                    severity: "error",
+                    summary: "Error",
+                    detail: "Failed to delete employees",
+                    life: 3000,
+                });
+            },
+            onFinish: () => reset(),
+        });
     };
 
     const confirmDeleteProduct = (product) => {
@@ -52,39 +122,16 @@ export default function QuestionnaireDataTable({products,setProducts,productDial
         setDeleteProductDialog(true);
     };
 
-    const deleteProduct = () => {
-        let _products = products.filter((val) => val.id !== product.id);
-
-        setProducts(_products);
-        setDeleteProductDialog(false);
-        setProduct(emptyQuest);
-        toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Product Deleted', life: 3000 });
-    };
-
-    const exportCSV = () => {
-        dt.current.exportCSV();
-    };
-
-    const confirmDeleteSelected = () => {
-        setDeleteProductsDialog(true);
-    };
-
-    const deleteSelectedProducts = () => {
-        let _products = products.filter((val) => !selectedProducts.includes(val));
-
-        setProducts(_products);
-        setDeleteProductsDialog(false);
-        setSelectedProducts(null);
-        toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
-    };
-
-    
-
+    const editProduct = (product) => {
+        setProduct({ ...product });
+        setProductDialog(true);
+        console.log(product);
+};
 
     const leftToolbarTemplate = () => {
         return (
             <div className="flex flex-wrap gap-2">
-                <Button label="Ajouter" icon="ti ti-plus" severity="success" onClick={openNew} />
+                <Button label="Ajouter" icon="ti ti-plus" severity="success" onClick={()=>setProductDialog(true)} />
                 <Button label="Supprimer" icon="ti ti-trash" severity="danger" onClick={confirmDeleteSelected} disabled={!selectedProducts || !selectedProducts.length} />
             </div>
         );
@@ -115,13 +162,13 @@ export default function QuestionnaireDataTable({products,setProducts,productDial
     
     const deleteProductDialogFooter = (
         <React.Fragment>
-            <Button label="No" icon="ti ti-times" outlined onClick={hideDeleteProductDialog} />
+            <Button label="No" className='mr-2' icon="ti ti-x" outlined onClick={hideDeleteProductDialog} />
             <Button label="Yes" icon="ti ti-check" severity="danger" onClick={deleteProduct} />
         </React.Fragment>
     );
     const deleteProductsDialogFooter = (
         <React.Fragment>
-            <Button label="No" icon="ti ti-times" outlined onClick={hideDeleteProductsDialog} />
+            <Button label="No" className='mr-2' icon="ti ti-x" outlined onClick={hideDeleteProductsDialog} />
             <Button label="Yes" icon="ti ti-check" severity="danger" onClick={deleteSelectedProducts} />
         </React.Fragment>
     );
