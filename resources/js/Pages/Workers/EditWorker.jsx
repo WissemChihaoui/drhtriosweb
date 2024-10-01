@@ -19,7 +19,7 @@ import ToolbarField from "./Partials/Toolbar";
 
 const EditWorker = ({auth,employee, categories, departements, contractsType, type_salairs, polyvalences, employee_contracts}) => {
     console.log(employee);
-    
+    const [isCurrentContractEnd, setIsCurrentContractEnd] = useState();
     const [filteredFonctions, setFilteredFonctions] = useState([]);
     
     const stepperRef = useRef(null);
@@ -58,7 +58,33 @@ const EditWorker = ({auth,employee, categories, departements, contractsType, typ
         // Polyvalences
         polyvalences: employee.polyvalences.map((poly) => (poly.id)) || [],
     });
+    const toastContract = useRef();
 
+    useEffect(() => {
+        if (data?.end_date) {
+            const endDate = new Date(data.end_date);
+            const today = new Date();
+            endDate.setHours(0, 0, 0, 0);
+            today.setHours(0, 0, 0, 0);
+            setIsCurrentContractEnd(endDate < today);
+        }
+        
+    }, [data.end_date]);
+    useEffect(()=> {
+        if(isCurrentContractEnd){
+            toastContract.current.show({ severity: 'warn', summary: 'Le contrat a atteint son terme ', detail: 'Le contrat de cet employée a atteint son terme. Veuillez ajouter un autre', sticky: true })
+            setData((prevData)=> ({
+                ...prevData,
+                embauche: null,
+                start_date:null,
+                end_date:null,
+                contract:null,
+                salary_type: null,
+                salary: null
+            }))
+        }
+    }, [isCurrentContractEnd])
+    console.log(isCurrentContractEnd)
 
 
     const handleChange = (e) => {
@@ -127,9 +153,11 @@ const EditWorker = ({auth,employee, categories, departements, contractsType, typ
         })
         console.log(data)
     }
+
     
     return (
         <AuthenticatedLayout auth={auth} header={`Modifier l'employée #${data.id}`}>
+            <Toast ref={toastContract} position="center"/>
             <ToolbarField product={data} setData={setData} handleSubmit={handleSubmit}/>
             <div className="card">
                 <Stepper
@@ -215,6 +243,7 @@ const EditWorker = ({auth,employee, categories, departements, contractsType, typ
                                     stepperRef.current.nextCallback()
                                 }
                             />
+                            <Button label='Enregistrer' icon="ti ti-check" className="ml-2" onClick={()=>handleSubmit()}/>
                         </div>
                     </StepperPanel>
                     <StepperPanel header="Détails de l'entreprise">
@@ -249,7 +278,7 @@ const EditWorker = ({auth,employee, categories, departements, contractsType, typ
                                 </div>
                                 <div className="flex flex-column gap-2">
                                     <label htmlFor="contract">Contrat</label>
-                                    <Dropdown id="contract" value={data.contract} options={contractsType} optionLabel="name" optionValue="id" placeholder="Choisir Contrat" onChange={(e) => handleDropdownChange('contract', e.value)}  />
+                                    <Dropdown disabled={!isCurrentContractEnd} id="contract" value={data.contract} options={contractsType} optionLabel="name" optionValue="id" placeholder="Choisir Contrat" onChange={(e) => handleDropdownChange('contract', e.value)}  />
                                     <small className="text-red-500" id="username-help">
                                         Contrat est requis
                                     </small>
@@ -258,14 +287,14 @@ const EditWorker = ({auth,employee, categories, departements, contractsType, typ
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-2 p-4">
                                 <div className="flex flex-column gap-2">
                                     <label htmlFor="embauche">Date d'embauche</label>
-                                    <Calendar  id="embauche" name="embauche" value={data.embauche} onChange={(e) => handleDropdownChange('embauche', e.value)}/>
+                                    <Calendar disabled={!isCurrentContractEnd} id="embauche" name="embauche" value={data.embauche} onChange={(e) => handleDropdownChange('embauche', e.value)}/>
                                     <small className="text-red-500" id="username-help">
                                         Date d'embauche est requis
                                     </small>
                                 </div>
                                 <div className="flex flex-column gap-2">
                                     <label htmlFor="start_date">Date de début de contrat</label>
-                                    <Calendar  id="start_date" name="start_date" value={data.start_date} onChange={(e) => handleDropdownChange('start_date', e.value)}/>
+                                    <Calendar disabled={!isCurrentContractEnd} id="start_date" name="start_date" value={data.start_date} onChange={(e) => handleDropdownChange('start_date', e.value)}/>
                                     <small className="text-red-500" id="username-help">
                                         Date de début de contrat est requis
                                     </small>
@@ -314,6 +343,7 @@ const EditWorker = ({auth,employee, categories, departements, contractsType, typ
                                     stepperRef.current.nextCallback()
                                 }
                             />
+                            <Button label='Enregistrer' icon="ti ti-check" className="ml-2" onClick={()=>handleSubmit()}/>
                         </div>
                     </StepperPanel>
                     <StepperPanel header="Documents">
@@ -365,6 +395,7 @@ const EditWorker = ({auth,employee, categories, departements, contractsType, typ
                                     stepperRef.current.nextCallback()
                                 }
                             />
+                            <Button label='Enregistrer' icon="ti ti-check" className="ml-2" onClick={()=>handleSubmit()}/>
                         </div>
                     </StepperPanel>
                     <StepperPanel header="Polyvalence">
@@ -392,6 +423,7 @@ const EditWorker = ({auth,employee, categories, departements, contractsType, typ
                                     stepperRef.current.prevCallback()
                                 }
                             />
+                            <Button label='Enregistrer' icon="ti ti-check" className="ml-2" onClick={()=>handleSubmit()}/>
                             
                         </div>
                     </StepperPanel>

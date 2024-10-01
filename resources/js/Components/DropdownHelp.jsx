@@ -41,7 +41,7 @@ function DropdownHelp({
         onClick={() => setDropdownOpen(!dropdownOpen)}
         aria-expanded={dropdownOpen}
       >
-        <span className="sr-only">Need help?</span>
+        <span className="sr-only">Besoin d'aide?</span>
         <svg
           className="fill-current text-gray-500/80 dark:text-gray-400/80"
           width={16}
@@ -72,7 +72,7 @@ function DropdownHelp({
           onFocus={() => setDropdownOpen(true)}
           onBlur={() => setDropdownOpen(false)}
         >
-          <div className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase pt-1.5 pb-2 px-3">Need help?</div>
+          <div className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase pt-1.5 pb-2 px-3">Besoin d'aide?</div>
           <ul>
             <li>
               <Link

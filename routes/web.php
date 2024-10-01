@@ -53,6 +53,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/worker/add', [WorkerController::class, 'addWorker'])->name('add.worker');
     Route::get('/worker/edit/{id}', [WorkerController::class, 'edit'])->name('edit.worker.page');
     Route::post('/worker/edit/{id}', [WorkerController::class, 'editWorker'])->name('edit.worker');
+    Route::post('/worker/pushcsv', [WorkerController::class, 'pushCsv'])->name('push.csv.worker');
 });
 
 Route::post('/upload-file', [FileUploadController::class, 'upload'])->name('file.upload');

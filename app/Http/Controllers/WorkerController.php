@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 
-
+use Illuminate\Support\Facades\Validator; // Import the Validator facade
 use App\Models\Employee;
 use App\Models\Employee_contracts;
 use App\Models\Departement;
@@ -264,6 +264,85 @@ class WorkerController extends Controller
         return redirect()->back()->withErrors(['error' => 'An error occurred: ' . $e->getMessage()])->withInput();
     }
 }
+
+public function pushCsv(Request $request)
+{
+    $employeesData = $request->all(); // Get the array of employees from the request
+
+    DB::beginTransaction(); // Begin the transaction for bulk insertion
+
+    try {
+        foreach ($employeesData as $data) {
+            // Validate each employee's data using Validator::make()
+            $validator = Validator::make($data, [
+                'id_departement' => 'nullable|integer',
+                'id_fonction' => 'nullable|integer',
+                'name' => 'nullable|string|max:255',
+                'birthdate' => 'nullable|date',
+                'gender' => 'nullable|string',
+                'phone' => 'nullable|string|max:20',
+                'address' => 'nullable|string',
+                'email' => 'nullable|email|max:255',
+                'category_id' => 'nullable|integer',
+                'status' => 'nullable|string|max:255',
+                'commentaire' => 'nullable|string',
+                'resume' => 'nullable|file',
+                'document' => 'nullable|file',
+                'cin' => 'nullable|file',
+                'contract_id' => 'nullable|integer',
+                'salary_type_id' => 'nullable|integer',
+                'hire_date' => 'nullable|date',
+                'contract_start_date' => 'nullable|date',
+                'contract_end_date' => 'nullable|date',
+                'amount' => 'nullable|numeric',
+            ]);
+
+            // If validation fails, throw an error
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+
+            $validatedData = $validator->validated();
+
+            // Create employee record
+            $employee = new Employee();
+            $employee->name = $validatedData['name'];
+            $employee->birthdate = $validatedData['birthdate'];
+            $employee->gender = $validatedData['gender'];
+            $employee->phone = $validatedData['phone'];
+            $employee->address = $validatedData['address'];
+            $employee->email = $validatedData['email'];
+            $employee->category_id = $validatedData['category_id'];
+            $employee->id_departement = $validatedData['id_departement'];
+            $employee->id_fonction = $validatedData['id_fonction'];
+            $employee->status = $validatedData['status'];
+            $employee->commentaire = $validatedData['commentaire'];
+            $employee->resume = null; // Handle resume if needed
+            $employee->document = null; // Handle document if needed
+            $employee->cin = null; // Handle cin if needed
+            $employee->save(); // Save employee record
+
+            // Create the employee contract
+            $employeeContract = new Employee_contracts();
+            $employeeContract->employee_id = $employee->id;
+            $employeeContract->contract_id = $validatedData['contract_id'];
+            $employeeContract->hire_date = $validatedData['hire_date'];
+            $employeeContract->contract_start_date = $validatedData['contract_start_date'];
+            $employeeContract->contract_end_date = $validatedData['contract_end_date'];
+            $employeeContract->salary_type_id = $validatedData['salary_type_id'];
+            $employeeContract->amount = $validatedData['amount'];
+            $employeeContract->save(); // Save contract record
+        }
+
+        DB::commit(); // Commit the transaction after all records are inserted
+        return redirect()->route('workers')->with('success', 'machines a été ajouté.');
+    } catch (\Exception $e) {
+        DB::rollBack(); // Rollback the transaction on error
+        return redirect()->back()->withErrors(['error' => 'An error occurred: ' . $e->getMessage()])->withInput();
+    }
+}
+
+
 
 
 

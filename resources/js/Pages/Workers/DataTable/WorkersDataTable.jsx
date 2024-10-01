@@ -9,6 +9,7 @@ import { InputText } from 'primereact/inputtext';
 import { Tag } from 'primereact/tag';
 import { Link, useForm } from '@inertiajs/react';
 import { FileUpload } from 'primereact/fileupload';
+import CsvFile from '../Partials/CsvFile';
 
 export default function WorkersDataTable({employees , departements, contractsType, employee_contracts}) {
     let emptyProduct = {
@@ -28,6 +29,7 @@ const {
     reset,         
 } = useForm();
 const {
+    data,
     setData,post
 } = useForm({ids: []})
 
@@ -41,6 +43,11 @@ const {
     const [globalFilter, setGlobalFilter] = useState(null);
     const toast = useRef(null);
     const dt = useRef(null);
+
+    useEffect(()=> {
+        setProducts(employees);
+    },[employees])
+
 
    useEffect(() => {
        if(selectedProducts){
@@ -168,47 +175,14 @@ const contractBodyTemplate = (rowData) => {
             </div>
         );
     };
-    const customBase64Uploader = async (event) => {
-        // Convert file to base64 encoded
-        const file = event.files[0];
-        const reader = new FileReader();
-        let blob = await fetch(file.objectURL).then((r) => r.blob()); // Blob:url
 
-        reader.readAsText(blob);  // Read file as text to parse CSV
 
-        reader.onloadend = function () {
-            const csvText = reader.result; // CSV file as text
-
-            // Parse CSV string into array of objects
-            const arrayOfObjects = csvToArray(csvText);
-            console.log(arrayOfObjects); // Output the array of objects
-        };
-    };
-
-    // Function to parse CSV text into array of objects
-    const csvToArray = (csv) => {
-        const lines = csv.split("\n");
-
-        // Extract header row (first row)
-        const headers = lines[0].split(",");
-
-        // Create array of objects by iterating through each line
-        const result = lines.slice(1).map(line => {
-            const values = line.split(",");
-            const obj = headers.reduce((acc, header, index) => {
-                acc[header.trim()] = values[index].trim(); // Trim spaces from headers and values
-                return acc;
-            }, {});
-            return obj;
-        });
-
-        return result;
-    };
+   
 
 
     const rightToolbarTemplate = () => {
         return (<div className="flex flex-wrap gap-2 align-items-center justify-content-between ">
-                <FileUpload mode="basic" chooseLabel="Importer" name="demo[]" url="/api/upload" accept=".csv" maxFileSize={1000000} customUpload uploadHandler={customBase64Uploader} />
+                <CsvFile />
                 <Button size='small' label="Exporter" icon="ti ti-upload" onClick={exportCSV} className="p-button-help"/>
                 {header}
             </div>)
