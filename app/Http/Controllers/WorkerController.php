@@ -341,6 +341,52 @@ public function pushCsv(Request $request)
         return redirect()->back()->withErrors(['error' => 'An error occurred: ' . $e->getMessage()])->withInput();
     }
 }
+public function addContract(Request $request, $id)
+{
+    // Validate the incoming request data
+    $validatedData = $request->validate([
+        'embauche' => 'required|date',
+        'start_date' => 'required|date',
+        'end_date' => 'required|date',
+        'contract' => 'required|integer',
+        'salary_type' => 'required|integer',
+        'salary' => 'required|numeric',
+    ]);
+
+    // Start a database transaction
+    DB::beginTransaction();
+
+    try {
+        // Find the employee by their ID
+        $employee = Employee::findOrFail($id);
+
+        // Create a new Employee Contract
+        $employeeContract = new Employee_contracts();
+        $employeeContract->employee_id = $employee->id;
+        $employeeContract->contract_id = $validatedData['contract'];
+        $employeeContract->hire_date = $validatedData['embauche']; // "embauche" is hire_date
+        $employeeContract->contract_start_date = $validatedData['start_date'];
+        $employeeContract->contract_end_date = $validatedData['end_date'];
+        $employeeContract->salary_type_id = $validatedData['salary_type'];
+        $employeeContract->amount = $validatedData['salary'];
+
+        // Save the contract
+        $employeeContract->save();
+
+        // Commit the transaction
+        DB::commit();
+
+        // Return success response or redirect
+        return redirect()->route('workers')->with('success', 'Employee deleted successfully.');
+    } catch (\Exception $e) {
+        // Rollback the transaction on error
+        DB::rollBack();
+
+        // Return an error message
+        return redirect()->route('workers')->with('error', 'Employee deleted successfully.');
+    }
+}
+
 
 
 
