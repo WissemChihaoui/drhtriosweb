@@ -16,6 +16,7 @@ use App\Http\Controllers\CongesController;
 use App\Http\Controllers\PresenceController;
 use App\Http\Controllers\QuestionnaireController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DocumentationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -123,5 +124,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/questionnaire/add', [QuestionnaireController::class, 'store'])->name('questionnaire.store');
     Route::delete('/questionnaire/{id}', [QuestionnaireController::class, 'destroy'])->name('questionnaire.destroy');
     Route::post('questionnaire/delete', [QuestionnaireController::class, 'destroyMultiple'])->name('questionnaire.destroyMultiple');
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/documentation', [DocumentationController::class, 'index'])->name('documentation');
 });
 require __DIR__.'/auth.php';

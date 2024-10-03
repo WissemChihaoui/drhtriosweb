@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
+import { Link } from '@inertiajs/react';
 import Transition from '../utils/Transition';
 
 function DropdownHelp({
@@ -77,7 +78,7 @@ function DropdownHelp({
             <li>
               <Link
                 className="font-medium text-sm text-violet-500 hover:text-violet-600 dark:hover:text-violet-400 flex items-center py-1 px-3"
-                to="#0"
+                href={route('documentation')}
                 onClick={() => setDropdownOpen(!dropdownOpen)}
               >
                 <svg className="w-3 h-3 fill-current text-violet-500 shrink-0 mr-2" viewBox="0 0 12 12">

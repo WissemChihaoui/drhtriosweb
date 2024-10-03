@@ -99,7 +99,7 @@ const AddDepartement = ({productDialog, hideDialog, toast,submitted,setSubmitted
                             {submitted && !fonction.name && <small className="p-error">Remplir ce fonction.</small>}
                         </div>
                     ))}
-                    <Button label="Ajouter Fonction" icon="ti ti-plus" className="p-button-secondary mt-2" onClick={addFonction} />
+                    <Button severity='success' label="Ajouter Fonction" icon="ti ti-plus" className="p-button-secondary mt-2" onClick={addFonction} />
                 </div>
         </Dialog>
   </div>

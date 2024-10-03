@@ -167,7 +167,7 @@ const contractBodyTemplate = (rowData) => {
         return (
             <div className="flex flex-wrap gap-2">
                 <Link href={route('worker.add.page')} >
-                    <Button>
+                    <Button severity='success'>
                         Ajouter employée
                     </Button>
                 </Link>
