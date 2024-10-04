@@ -129,4 +129,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/documentation', [DocumentationController::class, 'index'])->name('documentation');
 });
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('rapport-journalier/{dateQuery}', [DocumentationController::class, 'rapportJournalier'])->name('gen.rapport.journalier');
+});
 require __DIR__.'/auth.php';
