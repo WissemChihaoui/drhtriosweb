@@ -54,5 +54,9 @@ class Employee extends Model
     {
         return $this->hasMany(Questionnaire::class, 'id_emp');
     }
+    public function departement()
+    {
+        return $this->belongsTo(Departement::class, 'id_departement');
+    }
 }
 
