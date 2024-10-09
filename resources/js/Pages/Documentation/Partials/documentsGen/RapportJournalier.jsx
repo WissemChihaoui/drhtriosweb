@@ -8,12 +8,10 @@ import { router } from '@inertiajs/react';
 Chart.register(...registerables);
 
 const RapportJournalierPage = ({ date, departmentAttendanceData, numberOfEmployeesPresent, numberOfEmployeesAbsent,absentEmployees, questionnaires }) => {
-  console.log(questionnaires);
+  console.log(absentEmployees);
   
   const chartRef1 = useRef(null);
-  const chartRef2 = useRef(null);
   const chartInstanceRef1 = useRef(null);
-  const chartInstanceRef2 = useRef(null);
 
   const pdfGeneratedRef = useRef(false);  // Using useRef to track PDF generation
 
@@ -54,50 +52,46 @@ const RapportJournalierPage = ({ date, departmentAttendanceData, numberOfEmploye
     const tableBody = absentEmployees.map((employee) => [
       employee.employee_id,
       employee.employee_name,
-      employee.reason || "No reason provided", // Default to 'No reason provided' if reason is null
+      employee.reason || "",
     ]);
     doc.autoTable({
       startY: firstTableY + 10,
-      head: [['ID', 'Nom', 'Reason']], // Table header
-      body: tableBody, // Parsed data from absentEmployees
+      head: [['ID', 'Nom', 'Reason']], 
+      body: tableBody,
     });
 
     const secondTableY = doc.autoTable.previous.finalY + 10;
     doc.text('Liste des questionnaires', 10, secondTableY);
-
+    const bodyData = questionnaires.map((q, index) => [
+      index + 1, 
+      q.employee.name, 
+      q.sanctions.type_sanction, 
+      q.description 
+    ]);
     doc.autoTable({
       startY: secondTableY + 10,
       head: [['ID', 'Nom', 'Sanction', 'Note']],
-      body: [
-        [1, 'Alice Green', '8'],
-        [2, 'Bob White', '9'],
-        [3, 'Charlie Blue', '7.5'],
-      ],
+      body: bodyData, 
     });
 
     const thirdTableY = doc.autoTable.previous.finalY + 10;
-    doc.text('Absence par département', 10, thirdTableY);
+doc.text('Absence par département', 10, thirdTableY);
 
-    doc.autoTable({
-      startY: thirdTableY + 10,
-      head: [['Department', 'Present', 'Absent']],
-      body: [
-        ['Admin', 5, 2],
-        ['Production', 20, 4],
-        ['HR', 3, 0],
-      ],
-    });
+const thirdData = departmentAttendanceData.map((q, index) => [
+  index + 1,           
+  q.departement, 
+  q.presentCount,
+  q.absentCount, 
+]);
+console.log(thirdData)
 
-    const secondChartY = doc.autoTable.previous.finalY + 20;
-    doc.text('Absence:', 10, secondChartY);
+doc.autoTable({
+  startY: thirdTableY + 10,
+  head: [['#', 'Departement', 'Present', 'Absent']],
+  body: thirdData,
+});
 
-    if (chartRef2.current) {
-      const chartCanvas2 = chartRef2.current;
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      const chartImage2 = await html2canvas(chartCanvas2, { useCORS: true, scale: 1 }).then(canvas => canvas.toDataURL('image/jpeg', 1));
-      doc.addImage(chartImage2, 'JPEG', 10, secondChartY + 10, 180, 100);
-    }
+   
 
     doc.save(`Rapport-Journalier-${date}.pdf`);
 
@@ -106,14 +100,11 @@ const RapportJournalierPage = ({ date, departmentAttendanceData, numberOfEmploye
 
   useEffect(() => {
     const ctx1 = chartRef1.current.getContext('2d');
-    const ctx2 = chartRef2.current.getContext('2d');
 
     if (chartInstanceRef1.current) {
       chartInstanceRef1.current.destroy();
     }
-    if (chartInstanceRef2.current) {
-      chartInstanceRef2.current.destroy();
-    }
+   
     const departmentNames = departmentAttendanceData.map(dept => dept.departement);
     const percentageAbsent = departmentAttendanceData.map(dept => dept.percentageAbsent);
     chartInstanceRef1.current = new Chart(ctx1, {
@@ -136,29 +127,9 @@ const RapportJournalierPage = ({ date, departmentAttendanceData, numberOfEmploye
       },
     });
 
-    chartInstanceRef2.current = new Chart(ctx2, {
-      type: 'line',
-      data: {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-        datasets: [{
-          label: '# of Votes',
-          data: [15, 10, 13, 7, 9, 8],
-          backgroundColor: 'rgba(54, 162, 235, 0.2)',
-          borderColor: 'rgba(54, 162, 235, 1)',
-          borderWidth: 1,
-        }],
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: { beginAtZero: true },
-        },
-      },
-    });
 
     return () => {
       if (chartInstanceRef1.current) chartInstanceRef1.current.destroy();
-      if (chartInstanceRef2.current) chartInstanceRef2.current.destroy();
     };
   }, []);
 
@@ -169,8 +140,8 @@ const RapportJournalierPage = ({ date, departmentAttendanceData, numberOfEmploye
   return (
     <div style={{ display: 'block', marginTop: '20px', width: '20cm' }}>
       <div>
-        <canvas ref={chartRef1} id="myBarChart" width="400" height="400"></canvas>
-        <canvas ref={chartRef2} id="myLineChart" width="400" height="400"></canvas>
+        <canvas ref={chartRef1} id="myBarChart" width="400" height="500"></canvas>
+        
       </div>
     </div>
   );

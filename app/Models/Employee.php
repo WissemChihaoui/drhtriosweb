@@ -4,6 +4,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Emp_presents;
+use App\Models\Contarts;
 class Employee extends Model
 {
     use HasFactory;
@@ -53,6 +54,11 @@ class Employee extends Model
     public function questionnaires()
     {
         return $this->hasMany(Questionnaire::class, 'id_emp');
+    }
+    public function contarts()
+    {
+        return $this->belongsToMany(Contarts::class, 'employee_contracts', 'employee_id', 'contract_id')
+                    ->withPivot('contract_start_date', 'contract_end_date');
     }
     public function departement()
     {

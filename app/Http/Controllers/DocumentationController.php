@@ -1,10 +1,11 @@
 <?php
 namespace App\Http\Controllers;
-
+use Carbon\Carbon;
 use Inertia\Inertia;
 use App\Models\Emp_presents;
 use App\Models\Departement;
 use App\Models\Questionnaires;
+use App\Models\Employee;
 
 class DocumentationController extends Controller{
     
@@ -71,6 +72,8 @@ class DocumentationController extends Controller{
         $departmentAttendanceData[] = [
             'departement' => $departement->nom_departement,
             'percentageAbsent' => $percentageAbsent,
+            'presentCount' => $presentCount,
+            'absentCount' => $absentCount,
         ];
     }
 
@@ -92,7 +95,7 @@ class DocumentationController extends Controller{
     $numberOfEmployeesAbsent = countEmployeesOnDate($empPresents, $dateQuery, 0);
     $datefmt = date('Y-m-d', strtotime($dateQuery));
 
-    $questionnaires = Questionnaires::whereDate('created_at', '=', $datefmt)->get();
+    $questionnaires = Questionnaires::whereDate('created_at', '=', $datefmt)->with('sanctions','employee')->get();
     // Return the data to the frontend
     return Inertia::render('Documentation/Partials/documentsGen/RapportJournalier', [
         'date' => $dateQuery,
@@ -103,6 +106,73 @@ class DocumentationController extends Controller{
         'questionnaires' => $questionnaires,
     ]);
 }
+
+public function getEmployeeStatistics($monthYear)
+{
+    // Parse the provided month and year
+    [$year, $month] = explode('-', $monthYear);
+
+    // Get the start and end date of the month (dd-mm-yyyy)
+    $startDate = Carbon::createFromFormat('d-m-Y', "01-$month-$year")->startOfDay();
+    $endDate = $startDate->copy()->endOfMonth(); // Get the last day of the month
+
+    // Fetch all employees with their contracts
+    $employees = Employee::with('contarts')->get();
+    
+    // Initialize arrays to categorize employees
+    $data = [
+        'Homme' => [
+            '18-25' => 0,
+            '26-35' => 0,
+            '36-45' => 0,
+            '46+' => 0,
+        ],
+        'Femme' => [
+            '18-25' => 0,
+            '26-35' => 0,
+            '36-45' => 0,
+            '46+' => 0,
+        ],
+    ];
+
+    // Iterate through employees and their contracts
+    foreach ($employees as $employee) {
+        $age = Carbon::parse($employee->birthdate)->age; // Assuming birthdate field
+        $gender = $employee->gender;
+
+        // Check if any of their contracts fall within the month
+        foreach ($employee->contarts as $contract) {
+            $contractStart = Carbon::parse($contract->contract_start_date)->startOfDay();
+            $contractEnd = Carbon::parse($contract->contract_end_date)->endOfDay();
+            // dd($contractStart);
+            // Verify if the contract is active during the selected month
+            if ($contractStart >= $startDate || $contractEnd <= $endDate ) {
+                // Categorize the employee based on age and gender
+                if ($age >= 18 && $age <= 25) {
+                    $data[$gender]['18-25']++;
+                } elseif ($age >= 26 && $age <= 35) {
+                    $data[$gender]['26-35']++;
+                } elseif ($age >= 36 && $age <= 45) {
+                    $data[$gender]['36-45']++;
+                } else {
+                    $data[$gender]['46+']++;
+                }
+
+                // No need to check further contracts for this employee once counted
+                break;
+            }
+        }
+    }
+    // dd($data);
+    // Return data to the frontend
+    return Inertia::render('Documentation/Partials/documentsGen/EmployeeStatistics', [
+        'employeeData' => $data,
+    ]);
+}
+
+
+
+
 
 
 }
