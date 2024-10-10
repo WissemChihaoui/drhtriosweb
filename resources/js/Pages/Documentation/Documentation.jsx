@@ -11,7 +11,7 @@ const Documentation = ({auth}) => {
     <AuthenticatedLayout
     auth={auth}
     header={'Documentation'}>
-        <div className='grid grid-cols-3'>
+        <div className='grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2'>
             <RapportJournalier />
             <Rapport1 />
             <Rotation />

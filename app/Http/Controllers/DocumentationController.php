@@ -55,20 +55,18 @@ class DocumentationController extends Controller{
                             'employee_id' => $employee->id,
                             'employee_name' => $employee->name,
                             'departement' => $departement->nom_departement,
-                            'reason' => $reason, // Include the reason for absence
+                            'reason' => $reason,
                         ];
                     }
                 }
             }
         }
 
-        // Calculate absenteeism percentage for the department
         $totalEmployees = $employees->count();
         $percentageAbsent = $totalEmployees > 0 
             ? round(($absentCount / $totalEmployees) * 100, 2) 
             : 0;
 
-        // Store department attendance data
         $departmentAttendanceData[] = [
             'departement' => $departement->nom_departement,
             'percentageAbsent' => $percentageAbsent,
@@ -109,18 +107,13 @@ class DocumentationController extends Controller{
 
 public function getEmployeeStatistics($monthYear)
 {
-    // Parse the provided month and year
-    [$year, $month] = explode('-', $monthYear);
+    [$day,$month, $year] = explode('-', $monthYear);
 
-    // Get the start and end date of the month (dd-mm-yyyy)
     $startDate = Carbon::createFromFormat('d-m-Y', "01-$month-$year")->startOfDay();
-    $endDate = $startDate->copy()->endOfMonth(); // Get the last day of the month
-
-    // Fetch all employees with their contracts
+    $endDate = $startDate->copy()->endOfMonth(); 
     $employees = Employee::with('contarts')->get();
     
-    // Initialize arrays to categorize employees
-    $data = [
+    $dataGender = [
         'Homme' => [
             '18-25' => 0,
             '26-35' => 0,
@@ -135,38 +128,92 @@ public function getEmployeeStatistics($monthYear)
         ],
     ];
 
-    // Iterate through employees and their contracts
     foreach ($employees as $employee) {
-        $age = Carbon::parse($employee->birthdate)->age; // Assuming birthdate field
+        $age = Carbon::parse($employee->birthdate)->age; 
         $gender = $employee->gender;
 
-        // Check if any of their contracts fall within the month
         foreach ($employee->contarts as $contract) {
             $contractStart = Carbon::parse($contract->contract_start_date)->startOfDay();
             $contractEnd = Carbon::parse($contract->contract_end_date)->endOfDay();
-            // dd($contractStart);
-            // Verify if the contract is active during the selected month
             if ($contractStart >= $startDate || $contractEnd <= $endDate ) {
-                // Categorize the employee based on age and gender
                 if ($age >= 18 && $age <= 25) {
-                    $data[$gender]['18-25']++;
+                    $dataGender[$gender]['18-25']++;
                 } elseif ($age >= 26 && $age <= 35) {
-                    $data[$gender]['26-35']++;
+                    $dataGender[$gender]['26-35']++;
                 } elseif ($age >= 36 && $age <= 45) {
-                    $data[$gender]['36-45']++;
+                    $dataGender[$gender]['36-45']++;
                 } else {
-                    $data[$gender]['46+']++;
+                    $dataGender[$gender]['46+']++;
                 }
 
-                // No need to check further contracts for this employee once counted
+        
                 break;
             }
         }
     }
-    // dd($data);
-    // Return data to the frontend
+
+   
+    $formattedMonth = sprintf('01-%02d-%s', $month, $year);
+
+    // $empPresents = Departement::with(['employees.emp_presents' => function ($query) use ($formattedMonth) {
+    //     // Filter the presence data for the specified month
+    //     $query->where('month', $formattedMonth);
+    // }])->get();
+    // dd($empPresents->all());
+
+   
+
+    // // Start and end date for the month
+    // $startDate = Carbon::createFromFormat('d-m-Y', "01-$month-$year")->startOfDay();
+    // $endDate = $startDate->copy()->endOfMonth();
+
+    // Get all departments with their employees and their presence data
+    $departments = Departement::with('employees.emp_presents')->get();
+    
+    // Initialize an array to store absence percentages
+    $absenceData = [];
+
+    foreach ($departments as $department) {
+        $totalEmployees = 0;
+        $totalAbsences = 0;
+
+        foreach ($department->employees as $employee) {
+            foreach ($employee->emp_presents as $empPresent) {
+                
+                if ($empPresent->month == $startDate->format('d-m-Y')) {
+                    $presenceData = json_decode($empPresent->presence_data, true)??[];
+                    $daysInMonth = count($presenceData);
+                    $absentDays = 0;
+
+                    // Calculate total absent days
+                    foreach ($presenceData as $day => $data) {
+                        if ($data['status'] == 0) {
+                            $absentDays++;
+                        }
+                    }
+
+                    $totalEmployees++;
+                    $totalAbsences += $absentDays / $daysInMonth; // Get absence percentage for the employee
+                }
+            }
+        }
+
+        if ($totalEmployees > 0) {
+            $absencePercentage = ($totalAbsences / $totalEmployees) * 100;
+        } else {
+            $absencePercentage = 0;
+        }
+
+        $absenceData[] = [
+            'department' => $department->nom_departement,
+            'absencePercentage' => $absencePercentage,
+        ];
+    }
+    
     return Inertia::render('Documentation/Partials/documentsGen/EmployeeStatistics', [
-        'employeeData' => $data,
+        'date' => $formattedMonth,
+        'employeeData' => $dataGender,
+        'absenceData' => $absenceData
     ]);
 }
 
