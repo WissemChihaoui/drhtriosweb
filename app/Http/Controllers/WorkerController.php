@@ -70,9 +70,7 @@ class WorkerController extends Controller
         
         Employee::whereIn('id', $ids)->delete();
 
-        return Inertia::render('Workers/Workers', [
-            'success' => 'Employees deleted successfully.'
-        ]);
+        return redirect()->route('workers')->with('success', 'Employee deleted successfully.');
     }
 
 

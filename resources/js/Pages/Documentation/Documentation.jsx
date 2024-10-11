@@ -4,7 +4,6 @@ import RapportJournalier from './Partials/RapportJournalier'
 import Rapport1 from './Partials/Rapport1'
 import Rotation from './Partials/Rotation'
 import FormatEmp from './Partials/FormatEmp'
-import Employees from './Partials/Employees'
 
 const Documentation = ({auth}) => {
   return (
@@ -16,7 +15,6 @@ const Documentation = ({auth}) => {
             <Rapport1 />
             <Rotation />
             <FormatEmp />
-            <Employees />
         </div>
     </AuthenticatedLayout>
   )

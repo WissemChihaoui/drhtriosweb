@@ -88,7 +88,7 @@ const EmployeeStatisticsReport = ({ date, employeeData, absenceData }) => {
             body: absenceData.map((q,i)=>[
                 i+1,
                 q.department,
-                '%'+q.absencePercentage
+                '%'+(q.absencePercentage).toFixed(2)
             ]),
         });
         doc.save(`Rapport-Statistiques-${date}.pdf`);

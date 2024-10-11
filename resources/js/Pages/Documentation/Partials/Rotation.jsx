@@ -14,7 +14,7 @@ export default function Rotation() {
     );
     const footer = (
         <>
-            <Link disabled={!date} href={route('gen.rapport.employee', { monthYear: formatDate(date) })}>
+            <Link disabled={!date} href={route('gen.rapport.rotation', { monthYear: formatDate(date) })}>
                 <Button label="Télécharger" icon="ti ti-download" disabled={!date} />
             </Link>
         </>
@@ -24,7 +24,7 @@ export default function Rotation() {
         <div className="card flex justify-content-center p-4">
             <Card title="Rapport Rotation" subTitle="Ce rapport didiée à la rotation des employées" footer={footer} header={header} className="md:w-25rem dark:bg-slate-800 dark:text-white">
                 <label>Choisir la date</label>
-                <Calendar inputClassName="dark:bg-slate-600 dark:text-white" panelClassName="dark:bg-slate-600 dark:text-white" className='w-full dark:bg-slate-600' value={date} onChange={(e) => setDate(e.value)} view="month" dateFormat="mm/yy"/>
+                <Calendar inputClassName="dark:bg-slate-600 dark:text-white" panelClassName="dark:bg-slate-600 dark:text-white" className='w-full dark:bg-slate-600' value={date} onChange={(e) => setDate(e.value)} view="year" dateFormat="yy"/>
             </Card>
         </div>
     )

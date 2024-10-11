@@ -6,6 +6,7 @@ use App\Models\Emp_presents;
 use App\Models\Departement;
 use App\Models\Questionnaires;
 use App\Models\Employee;
+use App\Models\Employee_contracts;
 
 class DocumentationController extends Controller{
     
@@ -155,22 +156,8 @@ public function getEmployeeStatistics($monthYear)
    
     $formattedMonth = sprintf('01-%02d-%s', $month, $year);
 
-    // $empPresents = Departement::with(['employees.emp_presents' => function ($query) use ($formattedMonth) {
-    //     // Filter the presence data for the specified month
-    //     $query->where('month', $formattedMonth);
-    // }])->get();
-    // dd($empPresents->all());
-
-   
-
-    // // Start and end date for the month
-    // $startDate = Carbon::createFromFormat('d-m-Y', "01-$month-$year")->startOfDay();
-    // $endDate = $startDate->copy()->endOfMonth();
-
-    // Get all departments with their employees and their presence data
     $departments = Departement::with('employees.emp_presents')->get();
     
-    // Initialize an array to store absence percentages
     $absenceData = [];
 
     foreach ($departments as $department) {
@@ -216,7 +203,44 @@ public function getEmployeeStatistics($monthYear)
         'absenceData' => $absenceData
     ]);
 }
+public function getRotationStatistics($monthYear){
+    [$day,$month, $year] = explode('-', $monthYear);
+    $contracts = Employee_contracts::whereYear('hire_date', '=', $year)
+    ->orWhereYear('contract_end_date', '=', $year)
+    ->get()
+    ->groupBy('employee_id');
 
+    $employeesJoined = [];
+    $employeesLeft = [];
+
+    for ($month = 1; $month <= 12; $month++) {
+        $employeesJoined[$month] = 0;
+        $employeesLeft[$month] = 0;
+    }
+
+    foreach ($contracts as $employeeContracts) {
+        $firstHireDate = $employeeContracts->min('hire_date'); 
+        $lastContractEndDate = $employeeContracts->max('contract_end_date');
+
+        $hireDate = Carbon::parse($firstHireDate);
+        $contractEndDate = Carbon::parse($lastContractEndDate);
+
+        if ($hireDate->year == $year) {
+            $employeesJoined[$hireDate->month]++;
+        }
+
+        if ($contractEndDate->year == $year) {
+            $employeesLeft[$contractEndDate->month]++;
+        }
+    }
+
+    // dd($monthYear);
+    return Inertia::render('Documentation/Partials/documentsGen/RotationRapport', [
+        'monthYear' => $monthYear,
+        'employeesLeft' => $employeesLeft,
+        'employeesJoined' => $employeesJoined,
+    ]);
+}
 
 
 

@@ -45,6 +45,7 @@ return new class extends Migration
             $table->string('cin')->nullable();
 
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::enableForeignKeyConstraints();
@@ -57,6 +58,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('employees');
+        Schema::table('employees', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
     }
 };

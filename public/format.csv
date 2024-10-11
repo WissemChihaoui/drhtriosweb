@@ -1,0 +1,3 @@
+id_departement;id_fonction;name;birthdate;gender;phone;address;email;category_id;status;commentaire;resume;document;cin;contract_id;salary_type_id;hire_date;contract_start_date;contract_end_date;amount
+1;1;wissem chihaoui;12/08/2000;Homme;(20) 2020250;azerty;mail@mail.com;3;active;;;;;2;1;09/09/2024;09/09/2024;09/09/2025;1000
+1;1;wissem chihaoui;12/08/2000;Homme;(20) 2020250;azerty;mail@mail.com;3;active;;;;;2;1;09/09/2024;09/09/2024;09/09/2025;1000

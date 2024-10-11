@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Employee;
 use App\Models\Sanctions;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Questionnaires extends Model
 {
     use HasFactory;
-
+    use SoftDeletes;
     // Define the table name if necessary (optional)
     protected $table = 'questionnaires';
 

@@ -13,11 +13,10 @@ const RapportJournalierPage = ({ date, departmentAttendanceData, numberOfEmploye
   const chartRef1 = useRef(null);
   const chartInstanceRef1 = useRef(null);
 
-  const pdfGeneratedRef = useRef(false);  // Using useRef to track PDF generation
-
+  const pdfGeneratedRef = useRef(false); 
   const generatePdf = async () => {
-    if (pdfGeneratedRef.current) return;  // Prevent running the function twice
-    pdfGeneratedRef.current = true;       // Mark PDF as generated
+    if (pdfGeneratedRef.current) return;  
+    pdfGeneratedRef.current = true;
 
     const doc = new jsPDF();
 
@@ -141,7 +140,6 @@ doc.autoTable({
     <div style={{ display: 'block', marginTop: '20px', width: '20cm' }}>
       <div>
         <canvas ref={chartRef1} id="myBarChart" width="400" height="500"></canvas>
-        
       </div>
     </div>
   );

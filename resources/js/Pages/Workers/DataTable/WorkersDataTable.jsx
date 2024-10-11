@@ -175,13 +175,22 @@ const contractBodyTemplate = (rowData) => {
             </div>
         );
     };
-
+    const handleDownload = () => {
+        const fileUrl = '/format.csv';
+        const link = document.createElement('a');
+        link.href = fileUrl;
+        link.setAttribute('download', 'example.csv');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
 
    
 
 
     const rightToolbarTemplate = () => {
         return (<div className="flex flex-wrap gap-2 align-items-center justify-content-between ">
+                 <Button label="Format" outlined  icon="ti ti-download" onClick={handleDownload} />
                 <CsvFile />
                 <Button size='small' label="Exporter" icon="ti ti-upload" onClick={exportCSV} className="p-button-help"/>
                 {header}

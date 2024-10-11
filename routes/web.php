@@ -132,5 +132,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('rapport-journalier/{dateQuery}', [DocumentationController::class, 'rapportJournalier'])->name('gen.rapport.journalier');
     Route::get('rapport-employee/{monthYear}', [DocumentationController::class, 'getEmployeeStatistics'])->name('gen.rapport.employee');
+    Route::get('rapport-rotation/{monthYear}', [DocumentationController::class, 'getRotationStatistics'])->name('gen.rapport.rotation');
 });
 require __DIR__.'/auth.php';

@@ -17,6 +17,7 @@ class CreateCategoriesTable extends Migration
             $table->id(); // Creates an auto-incrementing primary key column named 'id'
             $table->string('name'); // Creates a column named 'name' of type string
             $table->timestamps(); // Adds 'created_at' and 'updated_at' timestamp columns
+            $table->softDeletes();
         });
     }
 
@@ -27,6 +28,8 @@ class CreateCategoriesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('categories');
+        Schema::table('categories', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
     }
 }

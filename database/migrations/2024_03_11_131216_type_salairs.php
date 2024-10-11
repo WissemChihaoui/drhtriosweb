@@ -18,6 +18,8 @@ return new class extends Migration
             $table->id();
             $table->enum('type', ['Mensuelle', 'Par Heure']);
             $table->timestamps();
+            $table->softDeletes();
+
         });
         Schema::enableForeignKeyConstraints();
     }
@@ -29,6 +31,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('type_salairs');
+        Schema::table('type_salairs', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
     }
 };

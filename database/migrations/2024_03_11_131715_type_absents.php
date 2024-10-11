@@ -19,7 +19,8 @@ return new class extends Migration
             $table->unsignedBigInteger('id_societe');
             $table->foreign('id_societe')->references('id')->on('societes')->onDelete('cascade');
             $table->string('type'); 
-            $table->timestamps();           
+            $table->timestamps();
+            $table->softDeletes();
         });
         Schema::enableForeignKeyConstraints();
 
@@ -32,7 +33,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('type_absents');
-
+        Schema::table('type_absents', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
     }
 };

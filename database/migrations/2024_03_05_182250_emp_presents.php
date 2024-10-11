@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('employee_id');
             $table->foreign('employee_id')->references('id')->on('employees')->onDelete('cascade');
             $table->string('month');
-            $table->json('presence_data'); // JSON column to store daily presence
+            $table->json('presence_data');
             $table->timestamps();
         });
         Schema::enableForeignKeyConstraints();
@@ -31,6 +31,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('emp_presents');
+        Schema::table('emp_presents', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
     }
 };

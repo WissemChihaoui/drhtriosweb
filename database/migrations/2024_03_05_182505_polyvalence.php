@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreign('id_societe')->references('id')->on('societes')->onDelete('cascade');
             $table->string('name');
             $table->timestamps();
+            $table->softDeletes();
         });
         Schema::enableForeignKeyConstraints();
     }
@@ -30,6 +31,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('polyvalences');
+        Schema::table('polyvalences', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
     }
 };

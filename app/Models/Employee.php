@@ -5,10 +5,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Emp_presents;
 use App\Models\Contarts;
+use Illuminate\Database\Eloquent\SoftDeletes;
 class Employee extends Model
 {
     use HasFactory;
-
+    use SoftDeletes;
     protected $fillable = [
         'id_societe',
         'id_departement',

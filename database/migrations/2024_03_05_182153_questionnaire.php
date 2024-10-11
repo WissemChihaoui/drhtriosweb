@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('description');
             $table->date('date');
             $table->timestamps();
+            $table->softDeletes();
         });
         Schema::enableForeignKeyConstraints();
     }
@@ -33,6 +34,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('questionnaires');
+        Schema::table('questionnaires', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
     }
 };
