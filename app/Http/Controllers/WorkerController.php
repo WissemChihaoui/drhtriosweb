@@ -14,6 +14,8 @@ use App\Models\Categories;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class WorkerController extends Controller
 {
@@ -83,6 +85,7 @@ class WorkerController extends Controller
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string',
             'email' => 'nullable|email|max:255',
+            'employeeID' => 'nullable',
             'category' => 'nullable',
             'departement' => 'nullable',
             'fonction' => 'nullable',
@@ -116,6 +119,7 @@ class WorkerController extends Controller
             $employee->phone = $validatedData['phone'];
             $employee->address = $validatedData['address'];
             $employee->email = $validatedData['email'];
+            $employee->employeeID = $validatedData['employeeID'];
             $employee->category_id = $validatedData['category'];
             $employee->id_departement = $validatedData['departement'];
             $employee->id_fonction = $validatedData['fonction'];
@@ -188,6 +192,7 @@ class WorkerController extends Controller
         'address' => 'nullable|string',
         'email' => 'nullable|email|max:255',
         'status' => 'nullable|max:255',
+        'employeeID' => 'nullable',
         'category' => 'nullable',
         'departement' => 'nullable',
         'fonction' => 'nullable',
@@ -223,6 +228,7 @@ class WorkerController extends Controller
         $employee->phone = $validatedData['phone'] ?? $employee->phone;
         $employee->address = $validatedData['address'] ?? $employee->address;
         $employee->email = $validatedData['email'] ?? $employee->email;
+        $employee->employeeID = $validatedData['category'] ?? $employee->employeeID;
         $employee->category_id = $validatedData['category'] ?? $employee->category_id;
         $employee->id_departement = $validatedData['departement'] ?? $employee->id_departement;
         $employee->id_fonction = $validatedData['fonction'] ?? $employee->id_fonction;
@@ -265,80 +271,53 @@ class WorkerController extends Controller
 
 public function pushCsv(Request $request)
 {
-    $employeesData = $request->all(); // Get the array of employees from the request
-
-    DB::beginTransaction(); // Begin the transaction for bulk insertion
+    $employeesData = $request->all(); 
 
     try {
         foreach ($employeesData as $data) {
-            // Validate each employee's data using Validator::make()
-            $validator = Validator::make($data, [
-                'id_departement' => 'nullable|integer',
-                'id_fonction' => 'nullable|integer',
-                'name' => 'nullable|string|max:255',
-                'birthdate' => 'nullable|date',
-                'gender' => 'nullable|string',
-                'phone' => 'nullable|string|max:20',
-                'address' => 'nullable|string',
-                'email' => 'nullable|email|max:255',
-                'category_id' => 'nullable|integer',
-                'status' => 'nullable|string|max:255',
-                'commentaire' => 'nullable|string',
-                'resume' => 'nullable|file',
-                'document' => 'nullable|file',
-                'cin' => 'nullable|file',
-                'contract_id' => 'nullable|integer',
-                'salary_type_id' => 'nullable|integer',
-                'hire_date' => 'nullable|date',
-                'contract_start_date' => 'nullable|date',
-                'contract_end_date' => 'nullable|date',
-                'amount' => 'nullable|numeric',
-            ]);
+            log::info('Creating employee with data: ', $data);
 
-            // If validation fails, throw an error
-            if ($validator->fails()) {
-                return redirect()->back()->withErrors($validator)->withInput();
-            }
-
-            $validatedData = $validator->validated();
-
-            // Create employee record
             $employee = new Employee();
-            $employee->name = $validatedData['name'];
-            $employee->birthdate = $validatedData['birthdate'];
-            $employee->gender = $validatedData['gender'];
-            $employee->phone = $validatedData['phone'];
-            $employee->address = $validatedData['address'];
-            $employee->email = $validatedData['email'];
-            $employee->category_id = $validatedData['category_id'];
-            $employee->id_departement = $validatedData['id_departement'];
-            $employee->id_fonction = $validatedData['id_fonction'];
-            $employee->status = $validatedData['status'];
-            $employee->commentaire = $validatedData['commentaire'];
+            $employee->name = $data['name'] ?? null;
+            $employee->birthdate = Carbon::createFromFormat('d/m/Y', $data['birthdate'] ?? null)->format('Y-m-d'); // Convert birthdate
+            $employee->gender = $data['gender'] ?? null;
+            $employee->phone = $data['phone'] ?? null;
+            $employee->address = $data['address'] ?? null;
+            $employee->email = $data['email'] === "NULL" ? null : $data['email']; // Handle 'NULL' string
+            $employee->employeeID = $data['employeeID'] ?? null;
+            $employee->category_id = $data['category_id'] ?? null;
+            $employee->id_departement = $data['id_departement'] ?? null;
+            $employee->id_fonction = $data['id_fonction'] ?? null;
+            $employee->status = $data['status'] ?? null;
+            $employee->commentaire = $data['commentaire'] ?? null;
             $employee->resume = null; // Handle resume if needed
             $employee->document = null; // Handle document if needed
             $employee->cin = null; // Handle cin if needed
-            $employee->save(); // Save employee record
+            
+            $employee->save();
+            log::info('Employee created with ID: ' . $employee->id);
 
-            // Create the employee contract
             $employeeContract = new Employee_contracts();
-            $employeeContract->employee_id = $employee->id;
-            $employeeContract->contract_id = $validatedData['contract_id'];
-            $employeeContract->hire_date = $validatedData['hire_date'];
-            $employeeContract->contract_start_date = $validatedData['contract_start_date'];
-            $employeeContract->contract_end_date = $validatedData['contract_end_date'];
-            $employeeContract->salary_type_id = $validatedData['salary_type_id'];
-            $employeeContract->amount = $validatedData['amount'];
-            $employeeContract->save(); // Save contract record
+            $employeeContract->employee_id = $employee->id ?? null;
+            $employeeContract->contract_id = $data['contract_id'] ?? null;
+            $employeeContract->hire_date = Carbon::createFromFormat('d/m/Y', $data['hire_date'] ?? null)->format('Y-m-d'); // Convert hire_date
+            $employeeContract->contract_start_date = $data['contract_start_date'] ? Carbon::createFromFormat('d/m/Y', $data['contract_start_date'])->format('Y-m-d') : null;
+            $employeeContract->contract_end_date = $data['contract_end_date'] ? Carbon::createFromFormat('d/m/Y', $data['contract_end_date'])->format('Y-m-d') : null;
+            $employeeContract->salary_type_id = $data['salary_type_id'] ?? null;
+            $employeeContract->amount = $data['amount'] ?? null;
+            
+            $employeeContract->save();
+            log::info('Contract created for employee ID: ' . $employee->id);
         }
 
-        DB::commit(); // Commit the transaction after all records are inserted
-        return redirect()->route('workers')->with('success', 'machines a été ajouté.');
+        return redirect()->route('workers')->with('success', 'Employees have been added.');
     } catch (\Exception $e) {
         DB::rollBack(); // Rollback the transaction on error
+        log::error('Error occurred while adding employees: ' . $e->getMessage());
         return redirect()->back()->withErrors(['error' => 'An error occurred: ' . $e->getMessage()])->withInput();
     }
 }
+
 public function addContract(Request $request, $id)
 {
     // Validate the incoming request data

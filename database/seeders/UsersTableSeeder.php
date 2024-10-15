@@ -16,7 +16,7 @@ class UsersTableSeeder extends Seeder
     public function run()
     {
         DB::table('users')->insert([
-            'id_societe' => 1, // Assuming id_societe 1 exists
+           
             'phone' => '29620754',
             'name' => 'Wissem Chihaoui',
             'adress' => '123 Main St, Anytown, USA',

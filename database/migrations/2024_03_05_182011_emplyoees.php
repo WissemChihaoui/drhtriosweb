@@ -26,6 +26,7 @@ return new class extends Migration
             $table->foreign('id_fonction')->references('id')->on('fonctions')->onDelete('cascade');
 
             $table->string('name')->nullable();
+            $table->string('employeeID')->nullable();
             $table->date('birthdate')->nullable();
             $table->string('gender')->nullable();
             $table->string('phone')->nullable();

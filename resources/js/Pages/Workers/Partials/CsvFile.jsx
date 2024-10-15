@@ -12,6 +12,7 @@ const CsvFile = () => {
 
     useEffect(() => {
         setData(arrayOfObjects);
+        
     }, [arrayOfObjects]);
 
     const handleFileChange = (event) => {
@@ -46,6 +47,8 @@ const CsvFile = () => {
     };
 
     const submitFile = () => {
+        console.log(data);
+        
         if (arrayOfObjects) {
             post(route("push.csv.worker"), {
                 method: "post",
