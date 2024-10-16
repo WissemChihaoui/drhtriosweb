@@ -12,19 +12,19 @@ return new class extends Migration
             $table->id();
             
             // Corrected table reference from 'emplyoees' to 'employees'
-            $table->unsignedBigInteger('employee_id');
+            $table->unsignedBigInteger('employee_id')->nullable();
             $table->foreign('employee_id')->references('id')->on('employees')->onDelete('cascade');
             
-            $table->unsignedBigInteger('contract_id');
+            $table->unsignedBigInteger('contract_id')->nullable();
             $table->foreign('contract_id')->references('id')->on('contarts')->onDelete('cascade');
             
-            $table->unsignedBigInteger('salary_type_id');
+            $table->unsignedBigInteger('salary_type_id')->nullable();
             $table->foreign('salary_type_id')->references('id')->on('type_salairs')->onDelete('cascade');
             
-            $table->date('hire_date');
-            $table->date('contract_start_date');
-            $table->date('contract_end_date');
-            $table->decimal('amount', 10, 2); // Adjusted precision
+            $table->date('hire_date')->nullable();
+            $table->date('contract_start_date')->nullable();
+            $table->date('contract_end_date')->nullable();
+            $table->String('amount')->nullable(); // Adjusted precision
             $table->timestamps();
         });
         Schema::enableForeignKeyConstraints();

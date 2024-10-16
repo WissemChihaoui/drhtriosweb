@@ -252,7 +252,7 @@ const contractBodyTemplate = (rowData) => {
                     globalFilter={globalFilter}
                 >
                     <Column className='dark:bg-gray-800 dark:text-gray-200' selectionMode="multiple" exportable={false}></Column>
-                    <Column className='dark:bg-gray-800 dark:text-gray-200' field="id" header="Id" sortable style={{ minWidth: '12rem' }}></Column>
+                    <Column className='dark:bg-gray-800 dark:text-gray-200' field="employeeID" header="Réf" sortable style={{ minWidth: '12rem' }}></Column>
                     <Column className='dark:bg-gray-800 dark:text-gray-200' field="name" header="Nom" sortable style={{ minWidth: '16rem' }}></Column>
                     <Column className='dark:bg-gray-800 dark:text-gray-200' body={departmentBodyTemplate} header="Département" sortable style={{ minWidth: '8rem' }}></Column>
                     <Column className='dark:bg-gray-800 dark:text-gray-200' body={contractBodyTemplate} header="Contrat" sortable style={{ minWidth: '8rem' }}></Column>

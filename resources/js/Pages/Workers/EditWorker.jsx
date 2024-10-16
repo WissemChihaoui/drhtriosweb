@@ -29,7 +29,7 @@ const EditWorker = ({auth,employee, categories, departements, contractsType, typ
 
     const genderOptions = ['Homme', 'Femme'];
     const [currentContract, setCurrentContract] = useState(employee_contracts[employee_contracts.length-1])
-
+    
     const { post, setData, data, errors } = useForm({
         // Personal details
         id: employee.id,
@@ -46,7 +46,7 @@ const EditWorker = ({auth,employee, categories, departements, contractsType, typ
         // Company details
         departement: employee.id_departement, // or a default value from depatements
         fonction: employee.id_fonction,   // or a default value from fonctions
-        contract: currentContract.contract_id,   // or a default value from contracts
+        contract: currentContract.contract_id ?? null,   // or a default value from contracts
         embauche: new Date(currentContract.hire_date),   // Assuming you're using a Date object
         start_date: new Date(currentContract.contract_start_date), // Assuming you're using a Date object
         end_date: new Date(currentContract.contract_end_date),   // Assuming you're using a Date object

@@ -279,7 +279,7 @@ public function pushCsv(Request $request)
 
             $employee = new Employee();
             $employee->name = $data['name'] ?? null;
-            $employee->birthdate = Carbon::createFromFormat('d/m/Y', $data['birthdate'] ?? null)->format('Y-m-d'); // Convert birthdate
+            $employee->birthdate = '16-10-2024'; // Convert birthdate
             $employee->gender = $data['gender'] ?? null;
             $employee->phone = $data['phone'] ?? null;
             $employee->address = $data['address'] ?? null;
@@ -301,8 +301,8 @@ public function pushCsv(Request $request)
             $employeeContract->employee_id = $employee->id ?? null;
             $employeeContract->contract_id = $data['contract_id'] ?? null;
             $employeeContract->hire_date = Carbon::createFromFormat('d/m/Y', $data['hire_date'] ?? null)->format('Y-m-d'); // Convert hire_date
-            $employeeContract->contract_start_date = $data['contract_start_date'] ? Carbon::createFromFormat('d/m/Y', $data['contract_start_date'])->format('Y-m-d') : null;
-            $employeeContract->contract_end_date = $data['contract_end_date'] ? Carbon::createFromFormat('d/m/Y', $data['contract_end_date'])->format('Y-m-d') : null;
+            $employeeContract->contract_start_date = '16-10-2024';
+            $employeeContract->contract_end_date = '16-10-2024';
             $employeeContract->salary_type_id = $data['salary_type_id'] ?? null;
             $employeeContract->amount = $data['amount'] ?? null;
             

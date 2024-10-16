@@ -1,3 +1,2 @@
-id_departement;id_fonction;name;birthdate;gender;phone;address;email;category_id;status;commentaire;resume;document;cin;contract_id;salary_type_id;hire_date;contract_start_date;contract_end_date;amount
-1;1;wissem chihaoui;12/08/2000;Homme;(20) 2020250;azerty;mail@mail.com;3;active;;;;;2;1;09/09/2024;09/09/2024;09/09/2025;1000
-1;1;wissem chihaoui;12/08/2000;Homme;(20) 2020250;azerty;mail@mail.com;3;active;;;;;2;1;09/09/2024;09/09/2024;09/09/2025;1000
+employeeID;name;email;gender;phone;birthdate;id_departement;contract_id;hire_date;contract_start_date;address;category_id;status;contract_end_date;amount;salary_type_id;commentaire;resume;document;cin
+FS14_446;Najia Bt Belgacem Harrabi ;NULL;Femme;NULL;14/05/1975;1;1;06/12/2010;;NULL;3;inactive;NULL;;1;;;;
