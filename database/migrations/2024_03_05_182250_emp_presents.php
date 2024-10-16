@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('month');
             $table->json('presence_data');
             $table->timestamps();
+            $table->softDeletes();
         });
         Schema::enableForeignKeyConstraints();
     }
