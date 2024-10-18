@@ -39,6 +39,7 @@ const AddWorker = ({ auth, mustVerifyEmail, status, employees, departements,cont
         fonction: null,   // or a default value from fonctions
         contract: null,   // or a default value from contracts
         embauche: null,   // Assuming you're using a Date object
+        exit_date: null,   // Assuming you're using a Date object
         start_date: null, // Assuming you're using a Date object
         end_date: null,   // Assuming you're using a Date object
         salary_type: null, // or a default value from salaryTypes
@@ -116,6 +117,7 @@ const AddWorker = ({ auth, mustVerifyEmail, status, employees, departements,cont
     
 
     const handleSubmit = () => {
+       
         post(route('add.worker'), {
             onError: (error) => {
                 console.log(error);

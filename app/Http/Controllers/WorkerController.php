@@ -77,86 +77,109 @@ class WorkerController extends Controller
 
 
     public function addWorker(Request $request)
-    {
-        $validatedData = $request->validate([
-            'name' => 'nullable|string|max:255',
-            'birthdate' => 'nullable|date',
-            'gender' => 'nullable|string',
-            'phone' => 'nullable|string|max:20',
-            'address' => 'nullable|string',
-            'email' => 'nullable|email|max:255',
-            'employeeID' => 'nullable',
-            'category' => 'nullable',
-            'departement' => 'nullable',
-            'fonction' => 'nullable',
-            'contract' => 'nullable',
-            'embauche' => 'nullable|date',
-            'start_date' => 'nullable|date',
-            'end_date' => 'nullable|date',
-            'salary_type' => 'nullable',
-            'salary' => 'nullable|numeric',
-            'polyvalence' => 'nullable|array', // Array of polyvalences
-            'resume' => 'nullable|file',
-            'document' => 'nullable|file',
-            'cin' => 'nullable|file',
-        ]);
+{
+    // Check the incoming data
 
-        // Begin a transaction to ensure data integrity
-        DB::beginTransaction();
+    $validatedData = $request->validate([
+        'name' => 'nullable|string|max:255',
+        'birthdate' => 'nullable|date',
+        'gender' => 'nullable|string',
+        'phone' => 'nullable|string|max:20',
+        'address' => 'nullable|string',
+        'email' => 'nullable|email|max:255',
+        'employeeID' => 'nullable',
+        'category' => 'nullable',
+        'departement' => 'nullable',
+        'fonction' => 'nullable',
+        'contract' => 'nullable',
+        'embauche' => 'nullable|date',
+        'exit_date' => 'nullable|date',
+        'start_date' => 'nullable|date',
+        'end_date' => 'nullable|date',
+        'salary_type' => 'nullable',
+        'salary' => 'nullable|numeric',
+        'polyvalence' => 'nullable|array',
+        'resume' => 'nullable|file',
+        'document' => 'nullable|file',
+        'cin' => 'nullable|file',
+    ]);
 
-        try {
-            // Handle file uploads
-            $resumePath = $request->hasFile('resume') ? $request->file('resume')->store('documents/resumes', 'public') : null;
-            $documentPath = $request->hasFile('document') ? $request->file('document')->store('documents/general', 'public') : null;
-            $cinPath = $request->hasFile('cin') ? $request->file('cin')->store('documents/cin', 'public') : null;
+   // Set and format dates using Carbon (with GMT+1 timezone)
+$gmtPlusOne = 'Europe/Paris'; // You can use the 'Europe/Paris' time zone, which corresponds to GMT+1
 
-            // Create the employee
-            $employee = new Employee();
-            $employee->name = $validatedData['name'];
-            $employee->id_societe = 1; // Assuming this is a default value or comes from elsewhere
-            $employee->birthdate = $validatedData['birthdate'];
-            $employee->gender = $validatedData['gender'];
-            $employee->phone = $validatedData['phone'];
-            $employee->address = $validatedData['address'];
-            $employee->email = $validatedData['email'];
-            $employee->employeeID = $validatedData['employeeID'];
-            $employee->category_id = $validatedData['category'];
-            $employee->id_departement = $validatedData['departement'];
-            $employee->id_fonction = $validatedData['fonction'];
-            $employee->resume = $resumePath;
-            $employee->document = $documentPath;
-            $employee->cin = $cinPath;
-            $employee->save();
+$validatedData['birthdate'] = isset($validatedData['birthdate']) 
+    ? Carbon::parse($validatedData['birthdate'])->setTimezone($gmtPlusOne)->format('Y-m-d') 
+    : null;
 
-        // Attach polyvalences to employee
+$validatedData['embauche'] = isset($validatedData['embauche']) 
+    ? Carbon::parse($validatedData['embauche'])->setTimezone($gmtPlusOne)->format('Y-m-d') 
+    : null;
+
+$validatedData['start_date'] = isset($validatedData['start_date']) 
+    ? Carbon::parse($validatedData['start_date'])->setTimezone($gmtPlusOne)->format('Y-m-d') 
+    : null;
+
+$validatedData['end_date'] = isset($validatedData['end_date']) 
+    ? Carbon::parse($validatedData['end_date'])->setTimezone($gmtPlusOne)->format('Y-m-d') 
+    : null;
+
+$validatedData['exit_date'] = isset($validatedData['exit_date']) 
+    ? Carbon::parse($validatedData['exit_date'])->setTimezone($gmtPlusOne)->format('Y-m-d') 
+    : null;
+
+    // Debug to verify the formatted dates
+    // dd($validatedData);
+
+    DB::beginTransaction();
+
+    try {
+        $resumePath = $request->hasFile('resume') ? $request->file('resume')->store('documents/resumes', 'public') : null;
+        $documentPath = $request->hasFile('document') ? $request->file('document')->store('documents/general', 'public') : null;
+        $cinPath = $request->hasFile('cin') ? $request->file('cin')->store('documents/cin', 'public') : null;
+
+        // Create the employee
+        $employee = new Employee();
+        $employee->name = $validatedData['name'];
+        $employee->id_societe = 1;
+        $employee->birthdate = $validatedData['birthdate'];
+        $employee->gender = $validatedData['gender'];
+        $employee->phone = $validatedData['phone'];
+        $employee->address = $validatedData['address'];
+        $employee->email = $validatedData['email'];
+        $employee->employeeID = $validatedData['employeeID'];
+        $employee->category_id = $validatedData['category'];
+        $employee->id_departement = $validatedData['departement'];
+        $employee->id_fonction = $validatedData['fonction'];
+        $employee->hire_date = $validatedData['embauche'];
+        $employee->exit_date = $validatedData['exit_date'];
+        $employee->resume = $resumePath;
+        $employee->document = $documentPath;
+        $employee->cin = $cinPath;
+        $employee->save();
+
+        // Sync polyvalence
         if (!empty($validatedData['polyvalence'])) {
             $employee->polyvalences()->sync($validatedData['polyvalence']);
-            }
-
-            // Create the employee contract
-            $employeeContract = new Employee_contracts();
-            $employeeContract->employee_id = $employee->id; // Set the employee ID
-            $employeeContract->contract_id = $validatedData['contract'] ?? null;
-            $employeeContract->hire_date = $validatedData['embauche'] ?? date('d-m-Y');
-            $employeeContract->contract_start_date = $validatedData['start_date'] ?? date('d-m-Y');
-            $employeeContract->contract_end_date = $validatedData['end_date'] ?? date('d-m-Y');
-            $employeeContract->salary_type_id = $validatedData['salary_type'];
-            $employeeContract->amount = $validatedData['salary'];
-            $employeeContract->save();
-
-            // Commit the transaction
-            DB::commit();
-
-            // Redirect to /workers with a success message
-            return redirect('/workers')->with('success', 'Employee and contract created successfully.');
-        } catch (\Exception $e) {
-            // Rollback the transaction on error
-            DB::rollBack();
-
-            // Redirect back with an error message
-            return redirect()->back()->withErrors(['error' => 'An error occurred: ' . $e->getMessage()])->withInput();
         }
+
+        // Create the employee contract
+        $employeeContract = new Employee_contracts();
+        $employeeContract->employee_id = $employee->id;
+        $employeeContract->contract_id = $validatedData['contract'] ?? null;
+        $employeeContract->contract_start_date = $validatedData['start_date'];
+        $employeeContract->contract_end_date = $validatedData['end_date'];
+        $employeeContract->salary_type_id = $validatedData['salary_type'];
+        $employeeContract->amount = $validatedData['salary'];
+        $employeeContract->save();
+
+        DB::commit();
+
+        return redirect('/workers')->with('success', 'Employee and contract created successfully.');
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return redirect()->back()->withErrors(['error' => 'An error occurred: ' . $e->getMessage()])->withInput();
     }
+}
 
     public function edit($id)
     {
@@ -198,6 +221,7 @@ class WorkerController extends Controller
         'fonction' => 'nullable',
         'contract' => 'nullable',
         'embauche' => 'nullable|date',
+        'exit_date' => 'nullable|date',
         'start_date' => 'nullable|date',
         'end_date' => 'nullable|date',
         'salary_type' => 'nullable',
@@ -232,6 +256,8 @@ class WorkerController extends Controller
         $employee->category_id = $validatedData['category'] ?? $employee->category_id;
         $employee->id_departement = $validatedData['departement'] ?? $employee->id_departement;
         $employee->id_fonction = $validatedData['fonction'] ?? $employee->id_fonction;
+        $employee->hire_date = $validatedData['embauche'] ?? $employee->hire_date;
+        $employee->exit_date = $validatedData['exit_date'] ?? $employee->exit_date;
         $employee->resume = $resumePath;
         $employee->document = $documentPath;
         $employee->cin = $cinPath;
@@ -244,68 +270,67 @@ class WorkerController extends Controller
         if ($employeeContract) {
             // Update the contract details
             $employeeContract->contract_id = $validatedData['contract'] ?? $employeeContract->contract_id;
-            $employeeContract->hire_date = $validatedData['embauche'] ?? $employeeContract->hire_date;
             $employeeContract->contract_start_date = $validatedData['start_date'] ?? $employeeContract->contract_start_date;
             $employeeContract->contract_end_date = $validatedData['end_date'] ?? $employeeContract->contract_end_date;
             $employeeContract->salary_type_id = $validatedData['salary_type'] ?? $employeeContract->salary_type_id;
             $employeeContract->amount = $validatedData['salary'] ?? $employeeContract->amount;
             $employeeContract->save();
         } else {
-            // If no contract exists, handle the case (optional)
             return redirect()->back()->withErrors(['error' => 'Contract not found for this employee.']);
         }
-
-        // Commit the transaction
         DB::commit();
-
-        // Redirect to /workers with a success message
         return redirect('/workers')->with('success', 'Employee and contract updated successfully.');
     } catch (\Exception $e) {
-        // Rollback the transaction on error
         DB::rollBack();
-
-        // Redirect back with an error message
         return redirect()->back()->withErrors(['error' => 'An error occurred: ' . $e->getMessage()])->withInput();
     }
 }
 
 public function pushCsv(Request $request)
 {
-    $employeesData = $request->all(); 
-
+    $employeesData = $request->all();
+    // dd($employeesData);
     try {
         foreach ($employeesData as $data) {
             log::info('Creating employee with data: ', $data);
 
+            // Create Employee
             $employee = new Employee();
             $employee->name = $data['name'] ?? null;
-            $employee->birthdate = '16-10-2024'; // Convert birthdate
+            $employee->birthdate = isset($data['birthdate']) ? Carbon::createFromFormat('d/m/Y', $data['birthdate'])->format('Y-m-d') : null;
             $employee->gender = $data['gender'] ?? null;
             $employee->phone = $data['phone'] ?? null;
             $employee->address = $data['address'] ?? null;
-            $employee->email = $data['email'] === "NULL" ? null : $data['email']; // Handle 'NULL' string
+            $employee->email = $data['email'] === "NULL" ? null : $data['email'];
             $employee->employeeID = $data['employeeID'] ?? null;
             $employee->category_id = $data['category_id'] ?? null;
             $employee->id_departement = $data['id_departement'] ?? null;
             $employee->id_fonction = $data['id_fonction'] ?? null;
             $employee->status = $data['status'] ?? null;
             $employee->commentaire = $data['commentaire'] ?? null;
-            $employee->resume = null; // Handle resume if needed
-            $employee->document = null; // Handle document if needed
-            $employee->cin = null; // Handle cin if needed
-            
+            $employee->hire_date = isset($data['hire_date']) ? $this->parseDate($data['hire_date']) : null;
+            $employee->exit_date = isset($data['exit_date']) ? $this->parseDate($data['exit_date']) : null;
+            $employee->resume = null;
+            $employee->document = null;
+            $employee->cin = null;
             $employee->save();
+
             log::info('Employee created with ID: ' . $employee->id);
 
+            // Create Employee Contract
             $employeeContract = new Employee_contracts();
             $employeeContract->employee_id = $employee->id ?? null;
             $employeeContract->contract_id = $data['contract_id'] ?? null;
-            $employeeContract->hire_date = Carbon::createFromFormat('d/m/Y', $data['hire_date'] ?? null)->format('Y-m-d'); // Convert hire_date
-            $employeeContract->contract_start_date = '16-10-2024';
-            $employeeContract->contract_end_date = '16-10-2024';
+            
+            // Date Handling for Contract
+            $employeeContract->contract_start_date = isset($data['contract_start_date']) ? $this->parseDate($data['contract_start_date']) : null;
+            $employeeContract->contract_end_date = isset($data['contract_end_date']) ? $this->parseDate($data['contract_end_date']) : null;
+           
+
+            // Salary Info
             $employeeContract->salary_type_id = $data['salary_type_id'] ?? null;
             $employeeContract->amount = $data['amount'] ?? null;
-            
+
             $employeeContract->save();
             log::info('Contract created for employee ID: ' . $employee->id);
         }
@@ -317,6 +342,20 @@ public function pushCsv(Request $request)
         return redirect()->back()->withErrors(['error' => 'An error occurred: ' . $e->getMessage()])->withInput();
     }
 }
+
+/**
+ * Helper function to parse date safely.
+ */
+private function parseDate($date)
+{
+    try {
+        return Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
+    } catch (\Exception $e) {
+        log::warning('Invalid date format: ' . $date);
+        return null;  // Return null if date is invalid
+    }
+}
+
 
 public function addContract(Request $request, $id)
 {
@@ -341,25 +380,15 @@ public function addContract(Request $request, $id)
         $employeeContract = new Employee_contracts();
         $employeeContract->employee_id = $employee->id;
         $employeeContract->contract_id = $validatedData['contract'];
-        $employeeContract->hire_date = $validatedData['embauche']; // "embauche" is hire_date
         $employeeContract->contract_start_date = $validatedData['start_date'];
         $employeeContract->contract_end_date = $validatedData['end_date'];
         $employeeContract->salary_type_id = $validatedData['salary_type'];
         $employeeContract->amount = $validatedData['salary'];
-
-        // Save the contract
         $employeeContract->save();
-
-        // Commit the transaction
         DB::commit();
-
-        // Return success response or redirect
         return redirect()->route('workers')->with('success', 'Employee deleted successfully.');
     } catch (\Exception $e) {
-        // Rollback the transaction on error
         DB::rollBack();
-
-        // Return an error message
         return redirect()->route('workers')->with('error', 'Employee deleted successfully.');
     }
 }

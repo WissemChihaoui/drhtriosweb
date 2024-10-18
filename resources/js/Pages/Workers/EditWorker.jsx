@@ -47,8 +47,9 @@ const EditWorker = ({auth,employee, categories, departements, contractsType, typ
         departement: employee.id_departement, // or a default value from depatements
         fonction: employee.id_fonction,   // or a default value from fonctions
         contract: currentContract.contract_id ?? null,   // or a default value from contracts
-        embauche: new Date(currentContract.hire_date),   // Assuming you're using a Date object
+        embauche: new Date(employee.hire_date),   // Assuming you're using a Date object
         start_date: new Date(currentContract.contract_start_date), // Assuming you're using a Date object
+        exit_date: new Date(employee.exit_date),   // Assuming you're using a Date object
         end_date: new Date(currentContract.contract_end_date),   // Assuming you're using a Date object
         salary_type: currentContract.salary_type_id, // or a default value from salaryTypes
         salary: currentContract.amount,
@@ -61,12 +62,15 @@ const EditWorker = ({auth,employee, categories, departements, contractsType, typ
         // Polyvalences
         polyvalences: employee.polyvalences.map((poly) => (poly.id)) || [],
     });
+    console.log(data.exit_date);
+    
     const toastContract = useRef();
     const [newContract, setNewContract] = useState({
         id: data.id,
         embauche: null,
         start_date:null,
         end_date:null,
+        exit_date:null,
         contract:null,
         salary_type: null,
         salary: null
@@ -86,7 +90,6 @@ const EditWorker = ({auth,employee, categories, departements, contractsType, typ
             toastContract.current.show({ severity: 'warn', summary: 'Le contrat a atteint son terme ', detail: 'Le contrat de cet employée a atteint son terme. Veuillez ajouter un autre', sticky: true })
             setData((prevContract)=> ({
                 ...prevContract,
-                embauche: null,
                 start_date:null,
                 end_date:null,
                 contract:null,
@@ -153,19 +156,19 @@ const EditWorker = ({auth,employee, categories, departements, contractsType, typ
     
     
     const handleSubmit = () => {
-        post(route('edit.worker',data.id),{
-            onError: (error) => {
-                console.log(error);
-            },
-            onSuccess: () => {
-                toast.current.show({
-                    severity: 'success',
-                    summary: 'Success',
-                    detail: 'Mis à jour d"employée a été effectué.',
-                    life: 3000
-                });
-            }
-        })
+        // post(route('edit.worker',data.id),{
+        //     onError: (error) => {
+        //         console.log(error);
+        //     },
+        //     onSuccess: () => {
+        //         toast.current.show({
+        //             severity: 'success',
+        //             summary: 'Success',
+        //             detail: 'Mis à jour d"employée a été effectué.',
+        //             life: 3000
+        //         });
+        //     }
+        // })
         console.log(data)
     }
     
@@ -288,14 +291,21 @@ const EditWorker = ({auth,employee, categories, departements, contractsType, typ
                                         }
                                     </div>
                                 </div>
-                            
-                            {!isCurrentContractEnd && <>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-2 p-4">
-                                <div className="flex flex-column gap-2">
+                            <div className="grid grid-cols-1">
+                            <div className="flex flex-column gap-2">
                                     <label htmlFor="embauche">Date d'embauche</label>
-                                    <Calendar disabled={!isCurrentContractEnd} id="embauche" name="embauche" value={data.embauche} onChange={(e) => handleDropdownChange('embauche', e.value)}/>
+                                    <Calendar id="embauche" name="embauche" value={data.embauche} onChange={(e) => handleDropdownChange('embauche', e.value)}/>
                                     
                                 </div>
+                                <div className="flex flex-column gap-2">
+                                    <label htmlFor="embauche">Date de sortie</label>
+                                    <Calendar id="exit_date" name="exit_date" value={data.exit_date} onChange={(e) => handleDropdownChange('exit_date', e.value)}/>
+                                    
+                                </div>
+                            </div>
+                            {!isCurrentContractEnd && <>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 p-4">
+                                
                                 <div className="flex flex-column gap-2">
                                     <label htmlFor="start_date">Date de début de contrat</label>
                                     <Calendar disabled={!isCurrentContractEnd} id="start_date" name="start_date" value={data.start_date} onChange={(e) => handleDropdownChange('start_date', e.value)}/>

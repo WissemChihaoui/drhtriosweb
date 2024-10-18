@@ -37,7 +37,8 @@ class Employee extends Model
         'birthdate' => 'date',
         'date_embauche' => 'date',
         'start_date' => 'date',
-        'end_date' => 'date'
+        'end_date' => 'date',
+        'exit_date'=>'date'
     ];
 
     public function polyvalences()

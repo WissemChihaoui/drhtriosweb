@@ -39,7 +39,8 @@ return new class extends Migration
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->text('commentaire')->nullable();
             // Contract details moved to employee_contracts table
-
+            $table->date('hire_date')->nullable();
+            $table->date('exit_date')->nullable();
             $table->string('polyvalence')->nullable(); // Could be JSON or string
             $table->string('resume')->nullable();
             $table->string('document')->nullable();

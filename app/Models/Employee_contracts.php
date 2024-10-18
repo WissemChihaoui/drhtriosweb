@@ -16,6 +16,7 @@ class Employee_contracts extends Model
         'contract_id',
         'salary_type_id',
         'hire_date',
+        'exit_date',
         'contract_start_date',
         'contract_end_date',
         'amount',
@@ -25,6 +26,7 @@ class Employee_contracts extends Model
         'hire_date' => 'date',
         'contract_start_date' => 'date',
         'contract_end_date' => 'date',
+        'exit_date' => 'date',
         'amount' => 'decimal:2',
     ];
 }
