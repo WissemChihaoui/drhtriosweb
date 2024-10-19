@@ -29,6 +29,7 @@ const EditWorker = ({auth,employee, categories, departements, contractsType, typ
 
     const genderOptions = ['Homme', 'Femme'];
     const [currentContract, setCurrentContract] = useState(employee_contracts[employee_contracts.length-1])
+    console.log('Exit Date',employee.exit_date);
     
     const { post, setData, data, errors } = useForm({
         // Personal details
@@ -48,9 +49,9 @@ const EditWorker = ({auth,employee, categories, departements, contractsType, typ
         fonction: employee.id_fonction,   // or a default value from fonctions
         contract: currentContract.contract_id ?? null,   // or a default value from contracts
         embauche: new Date(employee.hire_date),   // Assuming you're using a Date object
-        start_date: new Date(currentContract.contract_start_date), // Assuming you're using a Date object
-        exit_date: new Date(employee.exit_date),   // Assuming you're using a Date object
-        end_date: new Date(currentContract.contract_end_date),   // Assuming you're using a Date object
+        start_date:currentContract.contract_start_date ? new Date(currentContract.contract_start_date) : null, // Assuming you're using a Date object
+        exit_date:employee.exit_date,   // Assuming you're using a Date object
+        end_date:currentContract.contract_end_date ? new Date(currentContract.contract_end_date) : null,   // Assuming you're using a Date object
         salary_type: currentContract.salary_type_id, // or a default value from salaryTypes
         salary: currentContract.amount,
     
@@ -156,19 +157,19 @@ const EditWorker = ({auth,employee, categories, departements, contractsType, typ
     
     
     const handleSubmit = () => {
-        // post(route('edit.worker',data.id),{
-        //     onError: (error) => {
-        //         console.log(error);
-        //     },
-        //     onSuccess: () => {
-        //         toast.current.show({
-        //             severity: 'success',
-        //             summary: 'Success',
-        //             detail: 'Mis à jour d"employée a été effectué.',
-        //             life: 3000
-        //         });
-        //     }
-        // })
+        post(route('edit.worker',data.id),{
+            onError: (error) => {
+                console.log(error);
+            },
+            onSuccess: () => {
+                toast.current.show({
+                    severity: 'success',
+                    summary: 'Success',
+                    detail: 'Mis à jour d"employée a été effectué.',
+                    life: 3000
+                });
+            }
+        })
         console.log(data)
     }
     
@@ -308,7 +309,7 @@ const EditWorker = ({auth,employee, categories, departements, contractsType, typ
                                 
                                 <div className="flex flex-column gap-2">
                                     <label htmlFor="start_date">Date de début de contrat</label>
-                                    <Calendar disabled={!isCurrentContractEnd} id="start_date" name="start_date" value={data.start_date} onChange={(e) => handleDropdownChange('start_date', e.value)}/>
+                                    <Calendar  id="start_date" name="start_date" value={data.start_date} onChange={(e) => handleDropdownChange('start_date', e.value)}/>
                                     
                                 </div>
                                 <div className="flex flex-column gap-2">

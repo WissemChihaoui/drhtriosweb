@@ -92,8 +92,8 @@ export default function ToolbarField({product,setData, handleSubmit,employee_con
         const status = contractsType.find((c) => c.id === emp.contract_id)?.name || "";
         const salary_type = type_salairs.find((c)=>c.id ===emp.salary_type_id)?.type || "";
         const amount = emp.amount;
-        const contract_end_date = formatDate(emp.contract_end_date, '/');
-        const contract_start_date = formatDate(emp.contract_end_date, '/');
+        const contract_end_date = emp.contract_end_date? formatDate(emp.contract_end_date, '/'): null;
+        const contract_start_date =emp.contract_start_date? formatDate(emp.contract_start_date, '/'): null;
         const i = index+1;
         // Return an object with the status
         return { status, salary_type, amount, contract_end_date, contract_start_date, i};

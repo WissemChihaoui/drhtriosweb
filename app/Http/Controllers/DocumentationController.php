@@ -205,8 +205,8 @@ public function getEmployeeStatistics($monthYear)
 }
 public function getRotationStatistics($monthYear){
     [$day,$month, $year] = explode('-', $monthYear);
-    $contracts = Employee_contracts::whereYear('hire_date', '=', $year)
-    ->orWhereYear('contract_end_date', '=', $year)
+    $contracts = Employee::whereYear('hire_date', '=', $year)
+    ->orWhereYear('exit_date', '=', $year)
     ->get()
     ->groupBy('employee_id');
 
@@ -220,7 +220,7 @@ public function getRotationStatistics($monthYear){
 
     foreach ($contracts as $employeeContracts) {
         $firstHireDate = $employeeContracts->min('hire_date'); 
-        $lastContractEndDate = $employeeContracts->max('contract_end_date');
+        $lastContractEndDate = $employeeContracts->max('exit_date');
 
         $hireDate = Carbon::parse($firstHireDate);
         $contractEndDate = Carbon::parse($lastContractEndDate);

@@ -127,9 +127,6 @@ $validatedData['exit_date'] = isset($validatedData['exit_date'])
     ? Carbon::parse($validatedData['exit_date'])->setTimezone($gmtPlusOne)->format('Y-m-d') 
     : null;
 
-    // Debug to verify the formatted dates
-    // dd($validatedData);
-
     DB::beginTransaction();
 
     try {
@@ -232,9 +229,32 @@ $validatedData['exit_date'] = isset($validatedData['exit_date'])
         'cin' => 'nullable|file',
     ]);
 
-    // Begin a transaction to ensure data integrity
+    // Set the timezone to GMT+1
+    $gmtPlusOne = 'Europe/Paris'; // Use 'Europe/Paris' for GMT+1
+
+    // Convert dates to GMT+1 timezone
+    $validatedData['birthdate'] = isset($validatedData['birthdate']) 
+        ? Carbon::parse($validatedData['birthdate'])->setTimezone($gmtPlusOne)->format('Y-m-d') 
+        : null;
+
+    $validatedData['embauche'] = isset($validatedData['embauche']) 
+        ? Carbon::parse($validatedData['embauche'])->setTimezone($gmtPlusOne)->format('Y-m-d') 
+        : null;
+
+    $validatedData['start_date'] = isset($validatedData['start_date']) 
+        ? Carbon::parse($validatedData['start_date'])->setTimezone($gmtPlusOne)->format('Y-m-d') 
+        : null;
+
+    $validatedData['end_date'] = isset($validatedData['end_date']) 
+        ? Carbon::parse($validatedData['end_date'])->setTimezone($gmtPlusOne)->format('Y-m-d') 
+        : null;
+
+    $validatedData['exit_date'] = isset($validatedData['exit_date']) 
+        ? Carbon::parse($validatedData['exit_date'])->setTimezone($gmtPlusOne)->format('Y-m-d') 
+        : null;
+
     DB::beginTransaction();
-    // dd($request->all());
+
     try {
         // Fetch the existing employee by ID
         $employee = Employee::findOrFail($id);
@@ -252,7 +272,7 @@ $validatedData['exit_date'] = isset($validatedData['exit_date'])
         $employee->phone = $validatedData['phone'] ?? $employee->phone;
         $employee->address = $validatedData['address'] ?? $employee->address;
         $employee->email = $validatedData['email'] ?? $employee->email;
-        $employee->employeeID = $validatedData['category'] ?? $employee->employeeID;
+        $employee->employeeID = $validatedData['employeeID'] ?? $employee->employeeID;
         $employee->category_id = $validatedData['category'] ?? $employee->category_id;
         $employee->id_departement = $validatedData['departement'] ?? $employee->id_departement;
         $employee->id_fonction = $validatedData['fonction'] ?? $employee->id_fonction;
@@ -263,12 +283,14 @@ $validatedData['exit_date'] = isset($validatedData['exit_date'])
         $employee->cin = $cinPath;
         $employee->save();
 
-        
+        // Sync polyvalences
         $employee->polyvalences()->sync($request->polyvalences);
+
+        // Update the employee contract
         $employeeContract = Employee_contracts::where('employee_id', $employee->id)->first();
 
         if ($employeeContract) {
-            // Update the contract details
+            // Update contract details
             $employeeContract->contract_id = $validatedData['contract'] ?? $employeeContract->contract_id;
             $employeeContract->contract_start_date = $validatedData['start_date'] ?? $employeeContract->contract_start_date;
             $employeeContract->contract_end_date = $validatedData['end_date'] ?? $employeeContract->contract_end_date;
@@ -278,6 +300,7 @@ $validatedData['exit_date'] = isset($validatedData['exit_date'])
         } else {
             return redirect()->back()->withErrors(['error' => 'Contract not found for this employee.']);
         }
+
         DB::commit();
         return redirect('/workers')->with('success', 'Employee and contract updated successfully.');
     } catch (\Exception $e) {
@@ -285,6 +308,7 @@ $validatedData['exit_date'] = isset($validatedData['exit_date'])
         return redirect()->back()->withErrors(['error' => 'An error occurred: ' . $e->getMessage()])->withInput();
     }
 }
+
 
 public function pushCsv(Request $request)
 {
